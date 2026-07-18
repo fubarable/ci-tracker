@@ -1,0 +1,20 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class LanguageSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        \App\Models\Language::firstOrCreate(
+            ['code' => 'es'],
+            ['name' => 'Spanish', 'is_active' => true, 'sort_order' => 1]
+        );
+    }
+}
