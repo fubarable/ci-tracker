@@ -43,4 +43,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function inputSources()
+    {
+        return $this->hasMany(InputSource::class);
+    }
+
+    public function ciSessions()
+    {
+        return $this->hasMany(CiSession::class);
+    }
+
+    public function tags()
+    {
+        // return $this->belongsToMany(Tag::class, 'user_tag');
+        return $this->hasMany(Tag::class);
+    }
 }

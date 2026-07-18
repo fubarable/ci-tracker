@@ -7,4 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Language extends Model
 {
     protected $fillable = ['name', 'code', 'is_active', 'sort_order'];
+
+    public function ciSessions()
+    {
+        return $this->hasMany(CiSession::class);
+    }
 }
