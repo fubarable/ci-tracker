@@ -1,0 +1,10 @@
+[90m= [39m[34;4mApp\Models\User[39;24m {#8340
+    [34mid[39m: [35m1[39m,
+    [34mname[39m: [32m"[39m[32mPeter Stein[39m[32m"[39m,
+    [34memail[39m: [32m"[39m[32mpete_stein@yahoo.com[39m[32m"[39m,
+    [34memail_verified_at[39m: [32m"[39m[32m2026-07-18 19:33:28[39m[32m"[39m,
+    #[33mpassword[39m: [32m"[39m\$[32m2y[39m\$[32m12[39m\$[32muVeYoOy2GpsURH6E5XdM9ejiUIgG4TEdNRtdliN0Mx.FT2HLC2Tre[39m[32m"[39m,
+    #[33mremember_token[39m: [36mnull[39m,
+    [34mcreated_at[39m: [32m"[39m[32m2026-07-18 19:33:28[39m[32m"[39m,
+    [34mupdated_at[39m: [32m"[39m[32m2026-07-18 19:42:58[39m[32m"[39m,
+  }
