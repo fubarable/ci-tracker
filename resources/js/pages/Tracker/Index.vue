@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/vue3';
 import { watch } from 'vue';
 import { useTimerStore } from '@/stores/timer';
 import type { LiveSession } from '@/stores/timer';
+import TimerPanel from '@/components/TimerPanel.vue';
 
 
 const props = defineProps<{
@@ -32,11 +33,7 @@ watch(() => props.liveSession, (s) => timer.hydrate(s));
     <div class="p-6 space-y-6">
         <h1 class="text-2xl font-semibold">CI Tracker</h1>
 
-        <div class="rounded-lg border p-4">
-            <h2 class="font-medium mb-2">Timer state</h2>
-            <p>Status: {{ timer.status }}</p>
-            <p>Elapsed: {{ timer.elapsedSeconds }}s</p>
-        </div>
+        <TimerPanel :languages="languages" :modalities="modalities" :input-sources="inputSources" />
 
         <div class="rounded-lg border p-4">
             <h2 class="font-medium mb-2">Reference data check</h2>
