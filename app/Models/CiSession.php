@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class CiSession extends Model
 {
-    protected $fillable = ['user_id', 'language_id', 'modality_id', 'input_source_id', 'started_at', 'ended_at', 'paused_duration_seconds', 'title', 'notes'];
+    protected $fillable = ['user_id', 'language_id', 'modality_id', 'input_source_id', 'started_at', 'ended_at', 'paused_duration_seconds', 'title', 'notes', 'paused_at'];
 
     protected $table = 'ci_sessions';
 
     protected $casts = [
         'started_at' => 'datetime',
         'ended_at' => 'datetime',
+        'paused_at' => 'datetime',
     ];
 
     public function user()
