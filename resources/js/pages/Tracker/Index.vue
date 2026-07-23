@@ -19,6 +19,7 @@ const props = defineProps<{
         input_source: { name: string };
     }>;
     liveSession: LiveSession | null;
+    todaysTotalSeconds: number; 
 }>();
 
 const timer = useTimerStore();
@@ -33,7 +34,12 @@ watch(() => props.liveSession, (s) => timer.hydrate(s));
     <div class="p-6 space-y-6">
         <h1 class="text-2xl font-semibold">CI Tracker</h1>
 
-        <TimerPanel :languages="languages" :modalities="modalities" :input-sources="inputSources" />
+        <TimerPanel 
+            :languages="languages" 
+            :modalities="modalities" 
+            :input-sources="inputSources" 
+            :todays-total-seconds="todaysTotalSeconds" 
+        />
 
         <div class="rounded-lg border p-4">
             <h2 class="font-medium mb-2">Reference data check</h2>

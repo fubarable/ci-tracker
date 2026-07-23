@@ -14,6 +14,7 @@ const props = defineProps<{
     languages: Array<{ id: number; name: string }>;
     modalities: Array<{ id: number; name: string }>;
     inputSources: Array<{ id: number; name: string }>;
+    todaysTotalSeconds: number;
 }>();
 
 const timer = useTimerStore();
@@ -27,6 +28,16 @@ const title = ref<string>('');
 const canStart = computed(() =>
     languageId.value !== '' && modalityId.value !== '' && inputSourceId.value !== ''
 );
+
+const todaysTotalDisplay = computed(() => {
+    // Add the live session's elapsed time if one is running
+    const liveElapsed = timer.status !== 'idle' ? timer.elapsedSeconds : 0;
+    const total = props.todaysTotalSeconds + liveElapsed;
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+});
 
 function onStart() {
     timer.start({
@@ -62,13 +73,19 @@ const statusColor = computed(() => ({
         </CardHeader>
 
         <CardContent class="space-y-4">
+            <div class="text-sm text-muted-foreground text-center">
+                Today: {{ todaysTotalDisplay }}
+            </div>
+
             <!-- IDLE: selection form -->
             <template v-if="timer.status === 'idle'">
                 <div class="grid gap-4 sm:grid-cols-3">
                     <div class="space-y-2">
                         <Label>Modality</Label>
                         <Select v-model="modalityId">
-                            <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select..." />
+                            </SelectTrigger>
                             <SelectContent>
                                 <SelectItem v-for="m in modalities" :key="m.id" :value="String(m.id)">
                                     {{ m.name }}
@@ -79,7 +96,9 @@ const statusColor = computed(() => ({
                     <div class="space-y-2">
                         <Label>Source</Label>
                         <Select v-model="inputSourceId">
-                            <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select..." />
+                            </SelectTrigger>
                             <SelectContent>
                                 <SelectItem v-for="s in inputSources" :key="s.id" :value="String(s.id)">
                                     {{ s.name }}
@@ -90,7 +109,9 @@ const statusColor = computed(() => ({
                     <div class="space-y-2">
                         <Label>Language</Label>
                         <Select v-model="languageId">
-                            <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select..." />
+                            </SelectTrigger>
                             <SelectContent>
                                 <SelectItem v-for="l in languages" :key="l.id" :value="String(l.id)">
                                     {{ l.name }}

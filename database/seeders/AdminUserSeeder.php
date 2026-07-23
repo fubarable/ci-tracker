@@ -25,6 +25,7 @@ class AdminUserSeeder extends Seeder
                 'name' => env('ADMIN_NAME', 'Admin'),
                 'password' => Hash::make($password),
                 'email_verified_at' => now(),
+                'timezone' => env('ADMIN_TIMEZONE', 'America/New_York'),
             ]
         );
 

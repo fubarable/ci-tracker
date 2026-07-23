@@ -30,6 +30,7 @@ class CiSessionController extends Controller
                 ->whereNull('ended_at')
                 ->with(['modality', 'inputSource'])
                 ->first(),
+            'todaysTotalSeconds' => $this->todaysTotalSeconds($request),
         ]);
     }
 
@@ -97,5 +98,26 @@ class CiSessionController extends Controller
     private function liveSession(Request $request)
     {
         return $request->user()->ciSessions()->whereNull('ended_at')->first();
+    }
+
+    private function todaysTotalSeconds(Request $request): int
+    {
+        $tz = $request->user()->timezone ?? config('app.timezone');
+        $startOfDay = now($tz)->startOfDay()->utc();
+        $endOfDay = now($tz)->endOfDay()->utc();
+
+        $todaysSessions = $request->user()->ciSessions()
+            ->where('started_at', '>=', $startOfDay)
+            ->where('started_at', '<=', $endOfDay)
+            ->whereNotNull('ended_at')
+            ->get();
+
+        $total = 0;
+        foreach ($todaysSessions as $s) {
+            $seconds = abs($s->started_at->diffInSeconds($s->ended_at)) - $s->paused_duration_seconds;
+            $total += $seconds;
+        }
+
+        return max(0, $total);
     }
 }
