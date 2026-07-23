@@ -22,6 +22,7 @@ export const useTimerStore = defineStore('timer', () => {
     // --- hydration (called by the page whenever props arrive) ---
     function hydrate(liveSession: LiveSession | null) {
         session.value = liveSession;
+        if (typeof window === 'undefined') return;   // SSR: no ticker
         if (liveSession && ticker === null) {
             ticker = window.setInterval(() => (now.value = Date.now()), 1000);
         }

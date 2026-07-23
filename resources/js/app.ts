@@ -27,11 +27,15 @@ createInertiaApp({
         color: '#4B5563',
     },
     setup({ el, App, props, plugin }) {
-        if (!el) return;
-        createApp({ render: () => h(App, props) })
+        const app = createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(createPinia())
-            .mount(el);
+            .use(createPinia());
+
+        if (el) {
+            app.mount(el);
+        }
+
+        return app;
     },
 });
 
