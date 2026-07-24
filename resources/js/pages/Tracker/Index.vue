@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useTimerStore } from '@/stores/timer';
 import type { LiveSession } from '@/stores/timer';
 import TimerPanel from '@/components/TimerPanel.vue';
@@ -14,17 +14,42 @@ const props = defineProps<{
         id: number;
         started_at: string;
         ended_at: string | null;
+        paused_duration_seconds: number;
         title: string | null;
         modality: { name: string };
         input_source: { name: string };
+        language: { name: string; code: string };
     }>;
     liveSession: LiveSession | null;
-    todaysTotalSeconds: number; 
+    todaysTotalSeconds: number;
 }>();
+
+function formatSessionDate(startedAt: string): string {
+    return new Date(startedAt).toLocaleString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+    });
+}
+
+function formatDuration(s: { started_at: string; ended_at: string | null; paused_duration_seconds?: number }): string {
+    if (!s.ended_at) return 'in progress';
+    const totalSeconds = Math.max(
+        0,
+        Math.floor((Date.parse(s.ended_at) - Date.parse(s.started_at)) / 1000) -
+        (s.paused_duration_seconds ?? 0)
+    );
+    const m = Math.floor(totalSeconds / 60);
+    const sec = totalSeconds % 60;
+    return `${m}m ${sec}s`;
+}
 
 const timer = useTimerStore();
 timer.hydrate(props.liveSession);
 watch(() => props.liveSession, (s) => timer.hydrate(s));
+
+const showReferenceCheck = ref(false);
 
 </script>
 
@@ -34,18 +59,16 @@ watch(() => props.liveSession, (s) => timer.hydrate(s));
     <div class="p-6 space-y-6">
         <h1 class="text-2xl font-semibold">CI Tracker</h1>
 
-        <TimerPanel 
-            :languages="languages" 
-            :modalities="modalities" 
-            :input-sources="inputSources" 
-            :todays-total-seconds="todaysTotalSeconds" 
-        />
+        <TimerPanel :languages="languages" :modalities="modalities" :input-sources="inputSources"
+            :todays-total-seconds="todaysTotalSeconds" />
 
-        <div class="rounded-lg border p-4">
-            <h2 class="font-medium mb-2">Reference data check</h2>
-            <p>Languages: {{languages.map(l => l.name).join(', ')}}</p>
-            <p>Modalities: {{modalities.map(m => m.name).join(', ')}}</p>
-            <p>Sources: {{inputSources.map(s => s.name).join(', ')}}</p>
+        <div v-if="showReferenceCheck">
+            <div class="rounded-lg border p-4">
+                <h2 class="font-medium mb-2">Reference data check</h2>
+                <p>Languages: {{languages.map(l => l.name).join(', ')}}</p>
+                <p>Modalities: {{modalities.map(m => m.name).join(', ')}}</p>
+                <p>Sources: {{inputSources.map(s => s.name).join(', ')}}</p>
+            </div>
         </div>
 
         <div class="rounded-lg border p-4">
@@ -53,6 +76,19 @@ watch(() => props.liveSession, (s) => timer.hydrate(s));
             <p v-if="sessions.length === 0" class="text-muted-foreground">
                 No sessions yet.
             </p>
+            <ul v-else class="divide-y">
+                <li v-for="s in sessions" :key="s.id" class="py-2 flex items-center justify-between text-sm">
+                    <div>
+                        <span class="font-medium">{{ s.modality.name }}</span>
+                        <span class="text-muted-foreground"> — {{ s.input_source.name }}</span>
+                        <span v-if="languages.length > 1" class="text-muted-foreground"> ({{ s.language.name }})</span>
+                        <span v-if="s.title" class="text-muted-foreground"> · {{ s.title }}</span>
+                    </div>
+                    <div class="text-muted-foreground">
+                        {{ formatSessionDate(s.started_at) }} · {{ formatDuration(s) }}
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
 </template>
