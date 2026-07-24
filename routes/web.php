@@ -13,6 +13,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/tracker/resume', [CiSessionController::class, 'resume'])->name('tracker.resume');
     Route::post('/tracker/stop', [CiSessionController::class, 'stop'])->name('tracker.stop');
     Route::post('/tracker/manual', [CiSessionController::class, 'storeManual'])->name('tracker.manual');
+    Route::patch('/tracker/{ciSession}', [CiSessionController::class, 'update'])->name('tracker.update');
+    Route::delete('/tracker/{ciSession}', [CiSessionController::class, 'destroy'])->name('tracker.destroy');
 });
 
 require __DIR__ . '/settings.php';

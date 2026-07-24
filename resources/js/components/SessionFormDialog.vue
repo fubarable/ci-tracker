@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,15 +11,30 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 
+interface EditableSession {
+    id: number;
+    language_id: number;
+    modality_id: number;
+    input_source_id: number;
+    started_at: string;
+    ended_at: string | null;
+    title: string | null;
+    notes: string | null;
+}
+
 const props = defineProps<{
     languages: Array<{ id: number; name: string }>;
     modalities: Array<{ id: number; name: string }>;
     inputSources: Array<{ id: number; name: string }>;
+    session?: EditableSession | null;   // present = edit mode, absent = create mode
 }>();
 
-const open = ref(false);
+const emit = defineEmits<{ close: [] }>();
 
-const languageId = ref<string>(props.languages.length === 1 ? String(props.languages[0].id) : '');
+const isEditMode = computed(() => !!props.session);
+const open = ref(isEditMode.value); // edit dialogs open immediately when triggered externally
+
+const languageId = ref<string>('');
 const modalityId = ref<string>('');
 const inputSourceId = ref<string>('');
 const startedAt = ref<string>('');
@@ -28,13 +43,36 @@ const title = ref<string>('');
 const notes = ref<string>('');
 const errors = ref<Record<string, string>>({});
 
+// Pre-fill from the session prop, converting DB datetime strings to
+// the "YYYY-MM-DDTHH:mm" shape datetime-local inputs expect.
+function toLocalInput(value: string | null): string {
+    if (!value) return '';
+    return value.slice(0, 16).replace(' ', 'T');
+}
+
+function hydrateFromSession() {
+    if (!props.session) return;
+    languageId.value = String(props.session.language_id);
+    modalityId.value = String(props.session.modality_id);
+    inputSourceId.value = String(props.session.input_source_id);
+    startedAt.value = toLocalInput(props.session.started_at);
+    endedAt.value = toLocalInput(props.session.ended_at);
+    title.value = props.session.title ?? '';
+    notes.value = props.session.notes ?? '';
+}
+
+watch(() => props.session, () => {
+    hydrateFromSession();
+    open.value = !!props.session;
+}, { immediate: true });
+
 const canSubmit = computed(() =>
     languageId.value !== '' && modalityId.value !== '' && inputSourceId.value !== '' &&
     startedAt.value !== '' && endedAt.value !== ''
 );
 
 function submit() {
-    router.post('/tracker/manual', {
+    const payload = {
         language_id: Number(languageId.value),
         modality_id: Number(modalityId.value),
         input_source_id: Number(inputSourceId.value),
@@ -42,35 +80,48 @@ function submit() {
         ended_at: endedAt.value,
         title: title.value || undefined,
         notes: notes.value || undefined,
-    }, {
+    };
+
+    const options = {
         preserveScroll: true,
-        onSuccess: () => {
-            open.value = false;
-            resetForm();
-        },
-        onError: (e) => { errors.value = e; },
-    });
+        onSuccess: () => { open.value = false; resetForm(); emit('close'); },
+        onError: (e: Record<string, string>) => { errors.value = e; },
+    };
+
+    if (isEditMode.value && props.session) {
+        router.patch(`/tracker/${props.session.id}`, payload, options);
+    } else {
+        router.post('/tracker/manual', payload, options);
+    }
 }
 
 function resetForm() {
-    modalityId.value = '';
-    inputSourceId.value = '';
-    startedAt.value = '';
-    endedAt.value = '';
-    title.value = '';
-    notes.value = '';
+    if (!isEditMode.value) {
+        languageId.value = props.languages.length === 1 ? String(props.languages[0].id) : '';
+        modalityId.value = '';
+        inputSourceId.value = '';
+        startedAt.value = '';
+        endedAt.value = '';
+        title.value = '';
+        notes.value = '';
+    }
     errors.value = {};
+}
+
+function onOpenChange(val: boolean) {
+    open.value = val;
+    if (!val) emit('close');
 }
 </script>
 
 <template>
-    <Dialog v-model:open="open">
-        <DialogTrigger as-child>
+    <Dialog :open="open" @update:open="onOpenChange">
+        <DialogTrigger v-if="!isEditMode" as-child>
             <Button variant="outline">Log a past session</Button>
         </DialogTrigger>
         <DialogContent class="sm:max-w-md">
             <DialogHeader>
-                <DialogTitle>Log a past session</DialogTitle>
+                <DialogTitle>{{ isEditMode ? 'Edit session' : 'Log a past session' }}</DialogTitle>
             </DialogHeader>
 
             <div class="space-y-4">
@@ -134,7 +185,9 @@ function resetForm() {
             </div>
 
             <DialogFooter>
-                <Button :disabled="!canSubmit" @click="submit">Save session</Button>
+                <Button :disabled="!canSubmit" @click="submit">
+                    {{ isEditMode ? 'Save changes' : 'Save session' }}
+                </Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>

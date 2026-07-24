@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\InputSource;
 use App\Models\Language;
 use App\Models\Modality;
+use App\Models\CiSession;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -137,6 +138,34 @@ class CiSessionController extends Controller
             ...$validated,
             'paused_duration_seconds' => 0,
         ]);
+
+        return back();
+    }
+
+    public function update(Request $request, CiSession $ciSession)
+    {
+        $this->authorize('update', $ciSession);
+
+        $validated = $request->validate([
+            'language_id' => 'required|exists:languages,id',
+            'modality_id' => 'required|exists:modalities,id',
+            'input_source_id' => 'required|exists:input_sources,id',
+            'started_at' => 'required|date',
+            'ended_at' => 'required|date|after:started_at',
+            'title' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+        ]);
+
+        $ciSession->update($validated);
+
+        return back();
+    }
+
+    public function destroy(CiSession $ciSession)
+    {
+        $this->authorize('delete', $ciSession);
+
+        $ciSession->delete();
 
         return back();
     }
