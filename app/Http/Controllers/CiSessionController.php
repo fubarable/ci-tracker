@@ -120,4 +120,24 @@ class CiSessionController extends Controller
 
         return max(0, $total);
     }
+
+    public function storeManual(Request $request)
+    {
+        $validated = $request->validate([
+            'language_id' => 'required|exists:languages,id',
+            'modality_id' => 'required|exists:modalities,id',
+            'input_source_id' => 'required|exists:input_sources,id',
+            'started_at' => 'required|date',
+            'ended_at' => 'required|date|after:started_at',
+            'title' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+        ]);
+
+        $request->user()->ciSessions()->create([
+            ...$validated,
+            'paused_duration_seconds' => 0,
+        ]);
+
+        return back();
+    }
 }

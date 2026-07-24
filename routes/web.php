@@ -12,6 +12,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/tracker/pause', [CiSessionController::class, 'pause'])->name('tracker.pause');
     Route::post('/tracker/resume', [CiSessionController::class, 'resume'])->name('tracker.resume');
     Route::post('/tracker/stop', [CiSessionController::class, 'stop'])->name('tracker.stop');
+    Route::post('/tracker/manual', [CiSessionController::class, 'storeManual'])->name('tracker.manual');
 });
 
 require __DIR__ . '/settings.php';

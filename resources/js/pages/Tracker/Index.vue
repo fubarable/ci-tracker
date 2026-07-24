@@ -4,6 +4,7 @@ import { ref, watch } from 'vue';
 import { useTimerStore } from '@/stores/timer';
 import type { LiveSession } from '@/stores/timer';
 import TimerPanel from '@/components/TimerPanel.vue';
+import ManualEntryDialog from '@/components/ManualEntryDialog.vue';
 
 
 const props = defineProps<{
@@ -61,6 +62,7 @@ const showReferenceCheck = ref(false);
 
         <TimerPanel :languages="languages" :modalities="modalities" :input-sources="inputSources"
             :todays-total-seconds="todaysTotalSeconds" />
+        <ManualEntryDialog :languages="languages" :modalities="modalities" :input-sources="inputSources" />
 
         <div v-if="showReferenceCheck">
             <div class="rounded-lg border p-4">
