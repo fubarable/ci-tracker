@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import TimerPanel from '@/components/TimerPanel.vue';
 import SessionFormDialog from '@/components/SessionFormDialog.vue';
 import { router } from '@inertiajs/vue3';
-import { Link } from '@inertiajs/vue3';
+// import { Link } from '@inertiajs/vue3';
 
 const editingSession = ref<null | typeof props.sessions[number]>(null);
 
@@ -73,9 +73,6 @@ const showReferenceCheck = ref(false);
     <Head title="Tracker" />
     <div class="p-6 space-y-6">
         <h1 class="text-2xl font-semibold">CI Tracker</h1>
-
-        <!-- TODO: This needs to go in a true navigation section of app -->
-        <Link href="/tracker/history" class="text-sm underline">View full history →</Link>
 
         <TimerPanel :languages="languages" :modalities="modalities" :input-sources="inputSources"
             :todays-total-seconds="todaysTotalSeconds" />

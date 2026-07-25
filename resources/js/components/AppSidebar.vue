@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from '@lucide/vue';
+import { BookOpen, FolderGit2, LayoutGrid, Clock, History } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -18,6 +18,16 @@ import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
+    {
+        title: 'Tracker',
+        href: '/tracker',
+        icon: Clock,
+    },
+    {
+        title: 'History',
+        href: '/tracker/history',
+        icon: History,
+    },
     {
         title: 'Dashboard',
         href: dashboard(),
@@ -38,7 +48,6 @@ const footerNavItems: NavItem[] = [
     },
 ];
 </script>
-
 <template>
     <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader>
@@ -52,11 +61,9 @@ const footerNavItems: NavItem[] = [
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>
-
         <SidebarContent>
             <NavMain :items="mainNavItems" />
         </SidebarContent>
-
         <SidebarFooter>
             <NavFooter :items="footerNavItems" />
             <NavUser />
