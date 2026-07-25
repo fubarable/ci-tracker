@@ -11,18 +11,11 @@ import { edit as editSecurity } from '@/routes/security';
 import type { NavItem } from '@/types';
 
 const sidebarNavItems: NavItem[] = [
-    {
-        title: 'Profile',
-        href: editProfile(),
-    },
-    {
-        title: 'Security',
-        href: editSecurity(),
-    },
-    {
-        title: 'Appearance',
-        href: editAppearance(),
-    },
+    { title: 'Profile', href: editProfile() },
+    { title: 'Security', href: editSecurity() },
+    { title: 'Appearance', href: editAppearance() },
+    { title: 'Input Sources', href: '/settings/input-sources' },
+    { title: 'Tags', href: '/settings/tags' },
 ];
 
 const { isCurrentOrParentUrl } = useCurrentUrl();

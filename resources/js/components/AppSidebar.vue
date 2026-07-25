@@ -33,11 +33,6 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
-    {
-        title: 'Input Sources',
-        href: '/settings/input-sources',
-        icon: ListPlus, // import from '@lucide/vue'
-    },
 ];
 
 const footerNavItems: NavItem[] = [
