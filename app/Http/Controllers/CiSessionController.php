@@ -169,4 +169,43 @@ class CiSessionController extends Controller
 
         return back();
     }
+
+    public function history(Request $request)
+    {
+        $query = $request->user()->ciSessions()
+            ->with(['modality', 'inputSource', 'language'])
+            ->whereNotNull('ended_at');
+
+        if ($request->filled('language_id')) {
+            $query->where('language_id', $request->integer('language_id'));
+        }
+        if ($request->filled('modality_id')) {
+            $query->where('modality_id', $request->integer('modality_id'));
+        }
+        if ($request->filled('input_source_id')) {
+            $query->where('input_source_id', $request->integer('input_source_id'));
+        }
+        if ($request->filled('date_from')) {
+            $query->whereDate('started_at', '>=', $request->date('date_from'));
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('started_at', '<=', $request->date('date_to'));
+        }
+
+        $sessions = $query->orderByDesc('started_at')
+            ->paginate(25)
+            ->withQueryString();
+
+        return Inertia::render('Tracker/History', [
+            'languages' => Language::where('is_active', true)->orderBy('sort_order')->get(),
+            'modalities' => Modality::orderBy('id')->get(),
+            'inputSources' => InputSource::where('is_active', true)
+                ->where(function ($q) use ($request) {
+                    $q->whereNull('user_id')->orWhere('user_id', $request->user()->id);
+                })
+                ->orderBy('name')->get(),
+            'sessions' => $sessions,
+            'filters' => $request->only(['language_id', 'modality_id', 'input_source_id', 'date_from', 'date_to']),
+        ]);
+    }
 }

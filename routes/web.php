@@ -8,6 +8,7 @@ Route::inertia('/', 'Welcome')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
     Route::get('/tracker', [CiSessionController::class, 'index'])->name('tracker.index');
+    Route::get('/tracker/history', [CiSessionController::class, 'history'])->name('tracker.history');
     Route::post('/tracker/start', [CiSessionController::class, 'start'])->name('tracker.start');
     Route::post('/tracker/pause', [CiSessionController::class, 'pause'])->name('tracker.pause');
     Route::post('/tracker/resume', [CiSessionController::class, 'resume'])->name('tracker.resume');
