@@ -22,6 +22,9 @@ interface SessionRow {
     modality: { name: string };
     input_source: { name: string };
     language: { name: string; code: string };
+    // Tags associated with the session added
+    tags: Array<{ id: number; name: string }>;
+    tag_ids: number[];
 }
 
 interface PaginatedSessions {
@@ -36,6 +39,7 @@ const props = defineProps<{
     languages: Array<{ id: number; name: string }>;
     modalities: Array<{ id: number; name: string }>;
     inputSources: Array<{ id: number; name: string }>;
+    tags: Array<{ id: number; name: string }>;
     sessions: PaginatedSessions;
     filters: {
         language_id?: string;
@@ -189,6 +193,6 @@ function deleteSession(id: number) {
         </div>
 
         <SessionFormDialog :languages="languages" :modalities="modalities" :input-sources="inputSources"
-            :session="editingSession" @close="editingSession = null" />
+            :tags="tags" :session="editingSession" @close="editingSession = null" />
     </div>
 </template>

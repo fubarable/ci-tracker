@@ -23,15 +23,20 @@ class CiSessionController extends Controller
                 })
                 ->orderBy('name')->get(),
             'sessions' => $request->user()->ciSessions()
-                ->with(['modality', 'inputSource', 'language'])
+                ->with(['modality', 'inputSource', 'language', 'tags'])
                 ->orderByDesc('started_at')
                 ->limit(20)
-                ->get(),
+                ->get()
+                ->map(function ($session) {
+                    $session->tag_ids = $session->tags->pluck('id');
+                    return $session;
+                }),
             'liveSession' => $request->user()->ciSessions()
                 ->whereNull('ended_at')
                 ->with(['modality', 'inputSource'])
                 ->first(),
             'todaysTotalSeconds' => $this->todaysTotalSeconds($request),
+            'tags' => $request->user()->tags()->orderBy('name')->get(),
         ]);
     }
 
@@ -132,12 +137,19 @@ class CiSessionController extends Controller
             'ended_at' => 'required|date|after:started_at',
             'title' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
+            'tag_ids' => 'nullable|array',
+            'tag_ids.*' => 'exists:tags,id',
         ]);
 
-        $request->user()->ciSessions()->create([
+        $tagIds = $validated['tag_ids'] ?? [];
+        unset($validated['tag_ids']);
+
+        $session = $request->user()->ciSessions()->create([
             ...$validated,
             'paused_duration_seconds' => 0,
         ]);
+
+        $session->tags()->sync($tagIds);
 
         return back();
     }
@@ -154,9 +166,15 @@ class CiSessionController extends Controller
             'ended_at' => 'required|date|after:started_at',
             'title' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
+            'tag_ids' => 'nullable|array',
+            'tag_ids.*' => 'exists:tags,id',
         ]);
 
+        $tagIds = $validated['tag_ids'] ?? [];
+        unset($validated['tag_ids']);
+
         $ciSession->update($validated);
+        $ciSession->tags()->sync($tagIds);
 
         return back();
     }
@@ -173,7 +191,7 @@ class CiSessionController extends Controller
     public function history(Request $request)
     {
         $query = $request->user()->ciSessions()
-            ->with(['modality', 'inputSource', 'language'])
+            ->with(['modality', 'inputSource', 'language', 'tags'])
             ->whereNotNull('ended_at');
 
         if ($request->filled('language_id')) {
@@ -196,6 +214,11 @@ class CiSessionController extends Controller
             ->paginate(25)
             ->withQueryString();
 
+        $sessions->through(function ($session) {
+            $session->tag_ids = $session->tags->pluck('id');
+            return $session;
+        });
+
         return Inertia::render('Tracker/History', [
             'languages' => Language::where('is_active', true)->orderBy('sort_order')->get(),
             'modalities' => Modality::orderBy('id')->get(),
@@ -206,6 +229,7 @@ class CiSessionController extends Controller
                 ->orderBy('name')->get(),
             'sessions' => $sessions,
             'filters' => $request->only(['language_id', 'modality_id', 'input_source_id', 'date_from', 'date_to']),
+            'tags' => $request->user()->tags()->orderBy('name')->get(),
         ]);
     }
 }

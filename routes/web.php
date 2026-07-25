@@ -27,6 +27,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/settings/tags', [TagController::class, 'index'])->name('tags.index');
     Route::post('/settings/tags', [TagController::class, 'store'])->name('tags.store');
+    Route::post('/settings/tags/find-or-create', [TagController::class, 'findOrCreate'])->name('tags.find-or-create');
     Route::delete('/settings/tags/{tag}', [TagController::class, 'destroy'])->name('tags.destroy');
 });
 

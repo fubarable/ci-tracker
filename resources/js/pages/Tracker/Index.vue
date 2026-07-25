@@ -15,6 +15,7 @@ const props = defineProps<{
     languages: Array<{ id: number; name: string; code: string }>;
     modalities: Array<{ id: number; name: string; slug: string }>;
     inputSources: Array<{ id: number; name: string; slug: string }>;
+    tags: Array<{ id: number; name: string }>;
     sessions: Array<{
         id: number;
         language_id: number;
@@ -28,6 +29,9 @@ const props = defineProps<{
         modality: { name: string };
         input_source: { name: string };
         language: { name: string; code: string };
+        // Tags associated with the session added
+        tags: Array<{ id: number; name: string }>;
+        tag_ids: number[];
     }>;
     liveSession: LiveSession | null;
     todaysTotalSeconds: number;
@@ -114,6 +118,6 @@ const showReferenceCheck = ref(false);
             </ul>
         </div>
         <SessionFormDialog :languages="languages" :modalities="modalities" :input-sources="inputSources"
-            :session="editingSession" @close="editingSession = null" />
+            :tags="tags" :session="editingSession" @close="editingSession = null" />
     </div>
 </template>

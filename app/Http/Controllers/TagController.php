@@ -37,4 +37,18 @@ class TagController extends Controller
 
         return back();
     }
+
+    public function findOrCreate(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $tag = $request->user()->tags()->firstOrCreate(
+            ['slug' => str($validated['name'])->slug()],
+            ['name' => $validated['name']]
+        );
+
+        return response()->json($tag);
+    }
 }
