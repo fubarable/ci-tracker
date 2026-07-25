@@ -46,26 +46,26 @@ const props = defineProps<{
     };
 }>();
 
-const languageId = ref(props.filters.language_id ?? '');
-const modalityId = ref(props.filters.modality_id ?? '');
-const inputSourceId = ref(props.filters.input_source_id ?? '');
+const languageId = ref(props.filters.language_id ?? 'all');
+const modalityId = ref(props.filters.modality_id ?? 'all');
+const inputSourceId = ref(props.filters.input_source_id ?? 'all');
 const dateFrom = ref(props.filters.date_from ?? '');
 const dateTo = ref(props.filters.date_to ?? '');
 
 function applyFilters() {
     router.get('/tracker/history', {
-        language_id: languageId.value || undefined,
-        modality_id: modalityId.value || undefined,
-        input_source_id: inputSourceId.value || undefined,
+        language_id: languageId.value !== 'all' ? languageId.value : undefined,
+        modality_id: modalityId.value !== 'all' ? modalityId.value : undefined,
+        input_source_id: inputSourceId.value !== 'all' ? inputSourceId.value : undefined,
         date_from: dateFrom.value || undefined,
         date_to: dateTo.value || undefined,
     }, { preserveState: true, replace: true });
 }
 
 function clearFilters() {
-    languageId.value = '';
-    modalityId.value = '';
-    inputSourceId.value = '';
+    languageId.value = 'all';
+    modalityId.value = 'all';
+    inputSourceId.value = 'all';
     dateFrom.value = '';
     dateTo.value = '';
     applyFilters();
@@ -106,30 +106,39 @@ function deleteSession(id: number) {
                 <div class="space-y-2">
                     <Label>Language</Label>
                     <Select v-model="languageId" @update:model-value="applyFilters">
-                        <SelectTrigger><SelectValue placeholder="All" /></SelectTrigger>
+                        <SelectTrigger>
+                            <SelectValue placeholder="All" />
+                        </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">All</SelectItem>
-                            <SelectItem v-for="l in languages" :key="l.id" :value="String(l.id)">{{ l.name }}</SelectItem>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem v-for="l in languages" :key="l.id" :value="String(l.id)">{{ l.name }}
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
                 <div class="space-y-2">
                     <Label>Modality</Label>
                     <Select v-model="modalityId" @update:model-value="applyFilters">
-                        <SelectTrigger><SelectValue placeholder="All" /></SelectTrigger>
+                        <SelectTrigger>
+                            <SelectValue placeholder="All" />
+                        </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">All</SelectItem>
-                            <SelectItem v-for="m in modalities" :key="m.id" :value="String(m.id)">{{ m.name }}</SelectItem>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem v-for="m in modalities" :key="m.id" :value="String(m.id)">{{ m.name }}
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
                 <div class="space-y-2">
                     <Label>Source</Label>
                     <Select v-model="inputSourceId" @update:model-value="applyFilters">
-                        <SelectTrigger><SelectValue placeholder="All" /></SelectTrigger>
+                        <SelectTrigger>
+                            <SelectValue placeholder="All" />
+                        </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">All</SelectItem>
-                            <SelectItem v-for="s in inputSources" :key="s.id" :value="String(s.id)">{{ s.name }}</SelectItem>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem v-for="s in inputSources" :key="s.id" :value="String(s.id)">{{ s.name }}
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -151,11 +160,8 @@ function deleteSession(id: number) {
             </p>
 
             <ul class="divide-y">
-                <li
-                    v-for="s in sessions.data"
-                    :key="s.id"
-                    class="py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm"
-                >
+                <li v-for="s in sessions.data" :key="s.id"
+                    class="py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm">
                     <div>
                         <span class="font-medium">{{ s.modality.name }}</span>
                         <span class="text-muted-foreground"> — {{ s.input_source.name }}</span>
@@ -168,32 +174,21 @@ function deleteSession(id: number) {
                         </span>
                         <div class="flex gap-1">
                             <Button variant="link" size="sm" @click="editingSession = s">Edit</Button>
-                            <Button variant="link" size="sm" class="text-destructive" @click="deleteSession(s.id)">Delete</Button>
+                            <Button variant="link" size="sm" class="text-destructive"
+                                @click="deleteSession(s.id)">Delete</Button>
                         </div>
                     </div>
                 </li>
             </ul>
 
             <div class="flex flex-wrap gap-1 mt-4">
-                <Button
-                    v-for="link in sessions.links"
-                    :key="link.label"
-                    variant="outline"
-                    size="sm"
-                    :disabled="!link.url"
-                    :class="{ 'bg-accent': link.active }"
-                    @click="link.url && router.visit(link.url, { preserveState: true })"
-                    v-html="link.label"
-                />
+                <Button v-for="link in sessions.links" :key="link.label" variant="outline" size="sm"
+                    :disabled="!link.url" :class="{ 'bg-accent': link.active }"
+                    @click="link.url && router.visit(link.url, { preserveState: true })" v-html="link.label" />
             </div>
         </div>
 
-        <SessionFormDialog
-            :languages="languages"
-            :modalities="modalities"
-            :input-sources="inputSources"
-            :session="editingSession"
-            @close="editingSession = null"
-        />
+        <SessionFormDialog :languages="languages" :modalities="modalities" :input-sources="inputSources"
+            :session="editingSession" @close="editingSession = null" />
     </div>
 </template>
