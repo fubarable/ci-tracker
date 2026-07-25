@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 interface TagOption {
     id: number;
@@ -47,29 +48,18 @@ function onEnter() {
 <template>
     <div class="space-y-2">
         <div class="flex flex-wrap gap-1">
-            <Badge
-                v-for="tag in selectedTags()"
-                :key="tag.id"
-                variant="secondary"
-                class="cursor-pointer"
-                @click="toggleExisting(tag)"
-            >
+            <Badge v-for="tag in selectedTags()" :key="tag.id" variant="secondary" class="cursor-pointer"
+                @click="toggleExisting(tag)">
                 {{ tag.name }} ✕
             </Badge>
         </div>
-        <Input
-            v-model="inputValue"
-            placeholder="Type a tag and press Enter..."
-            @keyup.enter="onEnter"
-        />
+        <Input v-model="inputValue" placeholder="Type a tag..." @keyup.enter="onEnter" class="flex-1" />
+        <Button type="button" variant="outline" size="sm" @click="onEnter">
+            Add
+        </Button>
         <div class="flex flex-wrap gap-1">
-            <Badge
-                v-for="tag in tags.filter((t) => !modelValue.includes(t.id))"
-                :key="tag.id"
-                variant="outline"
-                class="cursor-pointer text-muted-foreground"
-                @click="toggleExisting(tag)"
-            >
+            <Badge v-for="tag in tags.filter((t) => !modelValue.includes(t.id))" :key="tag.id" variant="outline"
+                class="cursor-pointer text-muted-foreground" @click="toggleExisting(tag)">
                 + {{ tag.name }}
             </Badge>
         </div>
