@@ -72,9 +72,9 @@ const statusColor = computed(() => ({
             <Badge :class="statusColor">{{ timer.status }}</Badge>
         </CardHeader>
 
-        <CardContent class="space-y-4">
-            <div class="text-sm text-muted-foreground text-center">
-                Today: {{ todaysTotalDisplay }}
+        <CardContent class="text-center space-y-1">
+            <div class="text-2xl text-muted-foreground">
+                Today's total: {{ todaysTotalDisplay }}
             </div>
 
             <!-- IDLE: selection form -->
@@ -134,7 +134,7 @@ const statusColor = computed(() => ({
             <!-- RUNNING / PAUSED: clock and controls -->
             <template v-else>
                 <div class="text-center space-y-1">
-                    <div class="text-5xl font-mono tabular-nums">{{ elapsedDisplay }}</div>
+                    <div class="text-7xl font-mono tabular-nums text-center">{{ elapsedDisplay }}</div>
                     <div class="text-sm text-muted-foreground">
                         {{ timer.session?.modality.name }} — {{ timer.session?.input_source.name }}
                         <template v-if="timer.session?.title"> · {{ timer.session.title }}</template>

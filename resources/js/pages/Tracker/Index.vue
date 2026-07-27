@@ -9,7 +9,7 @@ import SessionFormDialog from '@/components/SessionFormDialog.vue';
 import { router } from '@inertiajs/vue3';
 // import { Link } from '@inertiajs/vue3';
 
-const editingSession = ref<null | typeof props.sessions[number]>(null);
+// const editingSession = ref<null | typeof props.sessions[number]>(null);
 
 const props = defineProps<{
     languages: Array<{ id: number; name: string; code: string }>;
@@ -37,32 +37,38 @@ const props = defineProps<{
     todaysTotalSeconds: number;
 }>();
 
-function deleteSession(id: number) {
-    if (confirm('Delete this session? This cannot be undone.')) {
-        router.delete(`/tracker/${id}`, { preserveScroll: true });
-    }
-}
-
-function formatSessionDate(startedAt: string): string {
+function formatLastLogged(startedAt: string): string {
     return new Date(startedAt).toLocaleString(undefined, {
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
+        month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
     });
 }
 
-function formatDuration(s: { started_at: string; ended_at: string | null; paused_duration_seconds?: number }): string {
-    if (!s.ended_at) return 'in progress';
-    const totalSeconds = Math.max(
-        0,
-        Math.floor((Date.parse(s.ended_at) - Date.parse(s.started_at)) / 1000) -
-        (s.paused_duration_seconds ?? 0)
-    );
-    const m = Math.floor(totalSeconds / 60);
-    const sec = totalSeconds % 60;
-    return `${m}m ${sec}s`;
-}
+// function deleteSession(id: number) {
+//     if (confirm('Delete this session? This cannot be undone.')) {
+//         router.delete(`/tracker/${id}`, { preserveScroll: true });
+//     }
+// }
+
+// function formatSessionDate(startedAt: string): string {
+//     return new Date(startedAt).toLocaleString(undefined, {
+//         month: 'short',
+//         day: 'numeric',
+//         hour: 'numeric',
+//         minute: '2-digit',
+//     });
+// }
+
+// function formatDuration(s: { started_at: string; ended_at: string | null; paused_duration_seconds?: number }): string {
+//     if (!s.ended_at) return 'in progress';
+//     const totalSeconds = Math.max(
+//         0,
+//         Math.floor((Date.parse(s.ended_at) - Date.parse(s.started_at)) / 1000) -
+//         (s.paused_duration_seconds ?? 0)
+//     );
+//     const m = Math.floor(totalSeconds / 60);
+//     const sec = totalSeconds % 60;
+//     return `${m}m ${sec}s`;
+// }
 
 const timer = useTimerStore();
 timer.hydrate(props.liveSession);
@@ -90,6 +96,12 @@ const showReferenceCheck = ref(false);
             </div>
         </div>
 
+        <p v-if="sessions.length > 0" class="text-sm text-muted-foreground text-center">
+            Last logged: {{ sessions[0].modality.name }} — {{ sessions[0].input_source.name }}, {{
+                formatLastLogged(sessions[0].started_at) }}
+        </p>
+
+        <!--
         <div class="rounded-lg border p-4">
             <h2 class="font-medium mb-2">Recent sessions</h2>
             <p v-if="sessions.length === 0" class="text-muted-foreground">
@@ -119,5 +131,6 @@ const showReferenceCheck = ref(false);
         </div>
         <SessionFormDialog :languages="languages" :modalities="modalities" :input-sources="inputSources"
             :tags="tags" :session="editingSession" @close="editingSession = null" />
+    -->
     </div>
 </template>
