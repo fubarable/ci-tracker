@@ -103,7 +103,11 @@ function deleteSession(id: number) {
 
 <template>
     <div class="p-6 space-y-6">
-        <h1 class="text-2xl font-semibold">Session History</h1>
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-semibold">Session History</h1>
+            <SessionFormDialog :languages="languages" :modalities="modalities" :input-sources="inputSources"
+                :tags="tags" />
+        </div>
 
         <div class="rounded-lg border p-4 space-y-4">
             <div class="grid gap-4 sm:grid-cols-5">
@@ -192,7 +196,5 @@ function deleteSession(id: number) {
             </div>
         </div>
 
-        <SessionFormDialog :languages="languages" :modalities="modalities" :input-sources="inputSources"
-            :tags="tags" :session="editingSession" @close="editingSession = null" />
     </div>
 </template>
