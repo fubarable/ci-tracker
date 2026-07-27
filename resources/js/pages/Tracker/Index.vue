@@ -28,10 +28,6 @@ const props = defineProps<{
         notes: string | null;
         modality: { name: string };
         input_source: { name: string };
-        language: { name: string; code: string };
-        // Tags associated with the session added
-        tags: Array<{ id: number; name: string }>;
-        tag_ids: number[];
     }>;
     liveSession: LiveSession | null;
     todaysTotalSeconds: number;

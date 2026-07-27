@@ -23,9 +23,9 @@ class CiSessionController extends Controller
                 })
                 ->orderBy('name')->get(),
             'sessions' => $request->user()->ciSessions()
-                ->with(['modality', 'inputSource', 'language', 'tags'])
+                ->with(['modality', 'inputSource'])
                 ->orderByDesc('started_at')
-                ->limit(20)
+                ->limit(1)
                 ->get()
                 ->map(function ($session) {
                     $session->tag_ids = $session->tags->pluck('id');
