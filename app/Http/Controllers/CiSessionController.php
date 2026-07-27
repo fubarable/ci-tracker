@@ -26,11 +26,11 @@ class CiSessionController extends Controller
                 ->with(['modality', 'inputSource'])
                 ->orderByDesc('started_at')
                 ->limit(1)
-                ->get()
-                ->map(function ($session) {
-                    $session->tag_ids = $session->tags->pluck('id');
-                    return $session;
-                }),
+                ->get(),
+            // ->map(function ($session) {
+            //     $session->tag_ids = $session->tags->pluck('id');
+            //     return $session;
+            // }),
             'liveSession' => $request->user()->ciSessions()
                 ->whereNull('ended_at')
                 ->with(['modality', 'inputSource'])
