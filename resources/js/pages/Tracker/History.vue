@@ -99,6 +99,16 @@ function deleteSession(id: number) {
         router.delete(`/tracker/${id}`, { preserveScroll: true });
     }
 }
+
+function downloadCsv() {
+    const params = new URLSearchParams();
+    if (languageId.value !== 'all') params.set('language_id', languageId.value);
+    if (modalityId.value !== 'all') params.set('modality_id', modalityId.value);
+    if (inputSourceId.value !== 'all') params.set('input_source_id', inputSourceId.value);
+    if (dateFrom.value) params.set('date_from', dateFrom.value);
+    if (dateTo.value) params.set('date_to', dateTo.value);
+    window.location.href = `/tracker/history/export?${params.toString()}`;
+}
 </script>
 
 <template>
@@ -110,9 +120,9 @@ function deleteSession(id: number) {
         </div>
 
         <div class="rounded-lg border p-4 space-y-4">
-            <div class="grid gap-4 sm:grid-cols-5">
-                <div class="space-y-2">
-                    <Label>Language</Label>
+            <div class="grid grid-cols-3 gap-3">
+                <div class="space-y-1">
+                    <Label class="text-xs">Language</Label>
                     <Select v-model="languageId" @update:model-value="applyFilters">
                         <SelectTrigger>
                             <SelectValue placeholder="All" />
@@ -124,8 +134,8 @@ function deleteSession(id: number) {
                         </SelectContent>
                     </Select>
                 </div>
-                <div class="space-y-2">
-                    <Label>Modality</Label>
+                <div class="space-y-1">
+                    <Label class="text-xs">Modality</Label>
                     <Select v-model="modalityId" @update:model-value="applyFilters">
                         <SelectTrigger>
                             <SelectValue placeholder="All" />
@@ -137,8 +147,8 @@ function deleteSession(id: number) {
                         </SelectContent>
                     </Select>
                 </div>
-                <div class="space-y-2">
-                    <Label>Source</Label>
+                <div class="space-y-1">
+                    <Label class="text-xs">Source</Label>
                     <Select v-model="inputSourceId" @update:model-value="applyFilters">
                         <SelectTrigger>
                             <SelectValue placeholder="All" />
@@ -150,16 +160,23 @@ function deleteSession(id: number) {
                         </SelectContent>
                     </Select>
                 </div>
-                <div class="space-y-2">
-                    <Label>From</Label>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1">
+                    <Label class="text-xs">From</Label>
                     <Input v-model="dateFrom" type="date" @change="applyFilters" />
                 </div>
-                <div class="space-y-2">
-                    <Label>To</Label>
+                <div class="space-y-1">
+                    <Label class="text-xs">To</Label>
                     <Input v-model="dateTo" type="date" @change="applyFilters" />
                 </div>
             </div>
-            <Button variant="ghost" size="sm" @click="clearFilters">Clear filters</Button>
+
+            <div class="flex items-center justify-between">
+                <Button variant="outline" size="sm" @click="clearFilters">Clear filters</Button>
+                <Button variant="outline" size="sm" @click="downloadCsv">Export CSV</Button>
+            </div>
         </div>
 
         <div class="rounded-lg border p-4">

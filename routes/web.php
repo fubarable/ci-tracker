@@ -29,6 +29,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/settings/tags', [TagController::class, 'store'])->name('tags.store');
     Route::post('/settings/tags/find-or-create', [TagController::class, 'findOrCreate'])->name('tags.find-or-create');
     Route::delete('/settings/tags/{tag}', [TagController::class, 'destroy'])->name('tags.destroy');
+
+    Route::get('/tracker/history/export', [CiSessionController::class, 'exportCsv'])->name('tracker.export');
 });
 
 require __DIR__ . '/settings.php';

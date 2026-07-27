@@ -232,4 +232,60 @@ class CiSessionController extends Controller
             'tags' => $request->user()->tags()->orderBy('name')->get(),
         ]);
     }
+
+    public function exportCsv(Request $request)
+    {
+        $query = $request->user()->ciSessions()
+            ->with(['modality', 'inputSource', 'language', 'tags'])
+            ->whereNotNull('ended_at');
+
+        // reuse the same filters as history()
+        if ($request->filled('language_id')) {
+            $query->where('language_id', $request->integer('language_id'));
+        }
+        if ($request->filled('modality_id')) {
+            $query->where('modality_id', $request->integer('modality_id'));
+        }
+        if ($request->filled('input_source_id')) {
+            $query->where('input_source_id', $request->integer('input_source_id'));
+        }
+        if ($request->filled('date_from')) {
+            $query->whereDate('started_at', '>=', $request->date('date_from'));
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('started_at', '<=', $request->date('date_to'));
+        }
+
+        $sessions = $query->orderBy('started_at')->get();
+
+        $filename = 'ci-tracker-export-' . now()->format('Y-m-d') . '.csv';
+
+        return response()->streamDownload(function () use ($sessions) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['Date', 'Language', 'Modality', 'Source', 'Start Time', 'End Time', 'Duration', 'Title', 'Notes', 'Tags']);
+
+            foreach ($sessions as $s) {
+                $seconds = abs($s->started_at->diffInSeconds($s->ended_at)) - $s->paused_duration_seconds;
+                $h = intdiv($seconds, 3600);
+                $m = intdiv($seconds % 3600, 60);
+                $sec = $seconds % 60;
+                $duration = sprintf('%d:%02d:%02d', $h, $m, $sec);
+
+                fputcsv($handle, [
+                    $s->started_at->toDateString(),
+                    $s->language->name,
+                    $s->modality->name,
+                    $s->inputSource->name,
+                    $s->started_at->format('n/j/Y H:i:s'),
+                    $s->ended_at->format('n/j/Y H:i:s'),
+                    $duration,
+                    $s->title,
+                    $s->notes,
+                    $s->tags->pluck('name')->join(', '),
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
 }
