@@ -7,25 +7,21 @@ import {
     Tooltip,
     Legend,
     BarElement,
+    LineElement,
+    PointElement,
     CategoryScale,
     LinearScale,
+    Filler,
 } from 'chart.js';
 import { ref, watch, computed } from 'vue';
-import { Bar } from 'vue-chartjs';
+import { Bar, Line } from 'vue-chartjs';
 import MultiSelectCombobox from '@/components/MultiSelectCombobox.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { dashboard } from '@/routes';
 
-ChartJS.register(
-    Title,
-    Tooltip,
-    Legend,
-    BarElement,
-    CategoryScale,
-    LinearScale,
-);
+ChartJS.register(Title, Tooltip, Legend, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Filler);
 
 defineOptions({
     layout: {
@@ -52,6 +48,7 @@ const props = defineProps<{
         input_source_ids: number[];
     };
     range: string;
+    growth: Array<{ date: string; cumulativeSeconds: number }>;
 }>();
 
 const selectedRange = ref(props.range ?? '30');
@@ -139,6 +136,46 @@ function clearDashboardFilters() {
     selectedSources.value = [];
     applyDashboardFilters();
 }
+
+function growthDateLabel(dateStr: string, allDates: string[]): string {
+    const d = new Date(dateStr + 'T00:00:00');
+    const first = new Date(allDates[0] + 'T00:00:00');
+    const last = new Date(allDates[allDates.length - 1] + 'T00:00:00');
+    const spanDays = (last.getTime() - first.getTime()) / (1000 * 60 * 60 * 24);
+
+    if (spanDays > 365) {
+        return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+    }
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+const growthChartData = computed(() => {
+    const dates = props.growth.map((g) => g.date);
+    return {
+        labels: dates.map((d) => growthDateLabel(d, dates)),
+        datasets: [
+            {
+                label: 'Cumulative hours',
+                data: props.growth.map((g) => Math.round((g.cumulativeSeconds / 3600) * 10) / 10),
+                borderColor: '#8b5cf6',
+                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                fill: true,
+                tension: 0.2,
+                pointRadius: 0,
+            },
+        ],
+    };
+});
+
+const growthChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Hours' } },
+        x: { ticks: { maxTicksLimit: 12 } },
+    },
+};
 </script>
 
 <template>
@@ -161,7 +198,7 @@ function clearDashboardFilters() {
                 </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{
                     formatHM(summary.weekSeconds)
-                    }}</CardContent>
+                }}</CardContent>
             </Card>
             <Card>
                 <CardHeader>
@@ -169,7 +206,7 @@ function clearDashboardFilters() {
                 </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{
                     formatHM(summary.allTimeSeconds)
-                    }}</CardContent>
+                }}</CardContent>
             </Card>
             <Card>
                 <CardHeader>
@@ -177,7 +214,7 @@ function clearDashboardFilters() {
                 </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{
                     summary.sessionCount
-                    }}</CardContent>
+                }}</CardContent>
             </Card>
         </div>
 
@@ -234,6 +271,16 @@ function clearDashboardFilters() {
                 <CardContent>
                     <div class="h-64">
                         <Bar :data="breakdownChartData(byModality)" :options="breakdownChartOptions" />
+                    </div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Cumulative growth</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div class="h-64">
+                        <Line :data="growthChartData" :options="growthChartOptions" />
                     </div>
                 </CardContent>
             </Card>
