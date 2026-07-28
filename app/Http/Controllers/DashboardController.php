@@ -24,9 +24,11 @@ class DashboardController extends Controller
             'input_source_ids' => $request->input('input_source_ids', []),
         ];
 
+        $range = $request->input('range', '30');
+
         return Inertia::render('Dashboard', [
             'summary' => $this->summaryCards($user, $tz, $filters),
-            'dailyTotals' => $this->dailyTotals($user, $tz, 30, $filters),
+            'dailyTotals' => $this->dailyTotals($user, $tz, $range, $filters),
             'growth' => $this->growthData($user, $tz, $filters),
             'bySource' => $this->breakdownBy($user, 'inputSource', 'name', $filters),
             'byModality' => $this->breakdownBy($user, 'modality', 'name', $filters),
@@ -38,6 +40,7 @@ class DashboardController extends Controller
                 })
                 ->orderBy('name')->get(),
             'filters' => $filters,
+            'range' => $range,
         ]);
     }
 
@@ -72,9 +75,24 @@ class DashboardController extends Controller
         ];
     }
 
-    private function dailyTotals(User $user, string $tz, int $days = 30, array $filters): array
+    private function dailyTotals(User $user, string $tz, string $range, array $filters): array
     {
-        $start = now($tz)->subDays($days - 1)->startOfDay();
+        if ($range === 'all') {
+            $earliest = $this->applyFilters(
+                $user->ciSessions()->whereNotNull('ended_at'),
+                $filters
+            )->orderBy('started_at')->first();
+
+            if (!$earliest) {
+                return [];
+            }
+
+            $start = $earliest->started_at->copy()->setTimezone($tz)->startOfDay();
+            $days = (int) $start->diffInDays(now($tz)->startOfDay()) + 1;
+        } else {
+            $days = (int) $range;
+            $start = now($tz)->subDays($days - 1)->startOfDay();
+        }
 
         $sessions = $this->applyFilters(
             $user->ciSessions()->whereNotNull('ended_at')->where('started_at', '>=', $start->copy()->utc()),
@@ -137,9 +155,33 @@ class DashboardController extends Controller
         return $query;
     }
 
-    private function growthData($user, string $tz, array $filters): array
+    private function growthData(User $user, string $tz, array $filters): array
     {
-        // Placeholder — full implementation comes with the cumulative growth chart (Part 3)
-        return [];
+        $sessions = $this->applyFilters(
+            $user->ciSessions()->whereNotNull('ended_at'),
+            $filters
+        )->orderBy('started_at')->get();
+
+        if ($sessions->isEmpty()) {
+            return [];
+        }
+
+        $byDay = [];
+        foreach ($sessions as $s) {
+            $localDate = $s->started_at->copy()->setTimezone($tz)->toDateString();
+            $seconds = max(0, $s->started_at->diffInSeconds($s->ended_at) - $s->paused_duration_seconds);
+            $byDay[$localDate] = ($byDay[$localDate] ?? 0) + $seconds;
+        }
+
+        ksort($byDay);
+
+        $cumulative = 0;
+        $result = [];
+        foreach ($byDay as $date => $seconds) {
+            $cumulative += $seconds;
+            $result[] = ['date' => $date, 'cumulativeSeconds' => $cumulative];
+        }
+
+        return $result;
     }
 }

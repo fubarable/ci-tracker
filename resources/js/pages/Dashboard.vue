@@ -15,6 +15,7 @@ import { Bar } from 'vue-chartjs';
 import MultiSelectCombobox from '@/components/MultiSelectCombobox.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { dashboard } from '@/routes';
 
 ChartJS.register(
@@ -50,15 +51,19 @@ const props = defineProps<{
         modality_ids: number[];
         input_source_ids: number[];
     };
+    range: string;
 }>();
+
+const selectedRange = ref(props.range ?? '30');
 
 const selectedLanguages = ref<number[]>(props.filters.language_ids ?? []);
 const selectedModalities = ref<number[]>(props.filters.modality_ids ?? []);
 const selectedSources = ref<number[]>(props.filters.input_source_ids ?? []);
+
 watch(
-    [selectedLanguages, selectedModalities, selectedSources],
+    [selectedLanguages, selectedModalities, selectedSources, selectedRange],
     applyDashboardFilters,
-    { deep: true },
+    { deep: true }
 );
 
 function formatHM(totalSeconds: number): string {
@@ -120,15 +125,12 @@ const breakdownChartOptions = {
 };
 
 function applyDashboardFilters() {
-    router.get(
-        '/dashboard',
-        {
-            language_ids: selectedLanguages.value,
-            modality_ids: selectedModalities.value,
-            input_source_ids: selectedSources.value,
-        },
-        { preserveState: true, replace: true },
-    );
+    router.get('/dashboard', {
+        language_ids: selectedLanguages.value,
+        modality_ids: selectedModalities.value,
+        input_source_ids: selectedSources.value,
+        range: selectedRange.value,
+    }, { preserveState: true, replace: true });
 }
 
 function clearDashboardFilters() {
@@ -140,83 +142,71 @@ function clearDashboardFilters() {
 </script>
 
 <template>
+
     <Head title="Dashboard" />
-    <div
-        class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
-    >
+    <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
         <!-- Summary cards + filters -->
         <div class="grid gap-4 md:grid-cols-4">
             <Card>
                 <CardHeader>
-                    <CardTitle class="text-sm text-muted-foreground"
-                        >Today</CardTitle
-                    >
+                    <CardTitle class="text-sm text-muted-foreground">Today</CardTitle>
                 </CardHeader>
-                <CardContent class="text-2xl font-semibold">{{
-                    formatHM(summary.todaySeconds)
-                }}</CardContent>
+                <CardContent class="text-2xl font-semibold">
+                    {{ formatHM(summary.todaySeconds) }}
+                </CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle class="text-sm text-muted-foreground"
-                        >This week</CardTitle
-                    >
+                    <CardTitle class="text-sm text-muted-foreground">This week</CardTitle>
                 </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{
                     formatHM(summary.weekSeconds)
-                }}</CardContent>
+                    }}</CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle class="text-sm text-muted-foreground"
-                        >All time</CardTitle
-                    >
+                    <CardTitle class="text-sm text-muted-foreground">All time</CardTitle>
                 </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{
                     formatHM(summary.allTimeSeconds)
-                }}</CardContent>
+                    }}</CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle class="text-sm text-muted-foreground"
-                        >Total sessions</CardTitle
-                    >
+                    <CardTitle class="text-sm text-muted-foreground">Total sessions</CardTitle>
                 </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{
                     summary.sessionCount
-                }}</CardContent>
+                    }}</CardContent>
             </Card>
         </div>
 
         <!-- Filters -->
         <div class="flex flex-wrap items-center gap-3">
-            <MultiSelectCombobox
-                v-model="selectedLanguages"
-                :options="languages"
-                placeholder="Languages"
-                class="w-40"
-            />
-            <MultiSelectCombobox
-                v-model="selectedModalities"
-                :options="modalities"
-                placeholder="Modalities"
-                class="w-40"
-            />
-            <MultiSelectCombobox
-                v-model="selectedSources"
-                :options="inputSources"
-                placeholder="Sources"
-                class="w-40"
-            />
-            <Button variant="ghost" size="sm" @click="clearDashboardFilters"
-                >Clear filters</Button
-            >
+            <MultiSelectCombobox v-model="selectedLanguages" :options="languages" placeholder="Languages"
+                class="w-40" />
+            <MultiSelectCombobox v-model="selectedModalities" :options="modalities" placeholder="Modalities"
+                class="w-40" />
+            <MultiSelectCombobox v-model="selectedSources" :options="inputSources" placeholder="Sources" class="w-40" />
+            <Button variant="ghost" size="sm" @click="clearDashboardFilters">Clear filters</Button>
         </div>
 
-        <!-- Daily totals, last 30 days -->
+        <!-- Daily totals, last 30, 60, 90, 365 days -->
         <Card>
-            <CardHeader>
-                <CardTitle>Last 30 days</CardTitle>
+            <CardHeader class="flex flex-row items-center justify-between">
+                <CardTitle>Activity over time</CardTitle>
+                <Select v-model="selectedRange">
+                    <SelectTrigger class="w-36">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="30">Last 30 days</SelectItem>
+                        <SelectItem value="60">Last 60 days</SelectItem>
+                        <SelectItem value="90">Last 90 days</SelectItem>
+                        <SelectItem value="365">Last year</SelectItem>
+                        <SelectItem value="all">All time</SelectItem>
+                    </SelectContent>
+                </Select>
             </CardHeader>
             <CardContent>
                 <div class="h-64">
@@ -233,10 +223,7 @@ function clearDashboardFilters() {
                 </CardHeader>
                 <CardContent>
                     <div class="h-64">
-                        <Bar
-                            :data="breakdownChartData(bySource)"
-                            :options="breakdownChartOptions"
-                        />
+                        <Bar :data="breakdownChartData(bySource)" :options="breakdownChartOptions" />
                     </div>
                 </CardContent>
             </Card>
@@ -246,10 +233,7 @@ function clearDashboardFilters() {
                 </CardHeader>
                 <CardContent>
                     <div class="h-64">
-                        <Bar
-                            :data="breakdownChartData(byModality)"
-                            :options="breakdownChartOptions"
-                        />
+                        <Bar :data="breakdownChartData(byModality)" :options="breakdownChartOptions" />
                     </div>
                 </CardContent>
             </Card>
