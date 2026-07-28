@@ -29,7 +29,10 @@ const props = defineProps<{
 
 function formatLastLogged(startedAt: string): string {
     return new Date(startedAt).toLocaleString(undefined, {
-        month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
     });
 }
 
@@ -62,33 +65,44 @@ function formatLastLogged(startedAt: string): string {
 
 const timer = useTimerStore();
 timer.hydrate(props.liveSession);
-watch(() => props.liveSession, (s) => timer.hydrate(s));
+watch(
+    () => props.liveSession,
+    (s) => timer.hydrate(s),
+);
 
 const showReferenceCheck = ref(false);
-
 </script>
 
 <template>
-
     <Head title="Tracker" />
-    <div class="p-6 space-y-6">
+    <div class="space-y-6 p-6">
         <h1 class="text-2xl font-semibold">CI Tracker</h1>
 
-        <TimerPanel :languages="languages" :modalities="modalities" :input-sources="inputSources"
-            :todays-total-seconds="todaysTotalSeconds" />
+        <TimerPanel
+            :languages="languages"
+            :modalities="modalities"
+            :input-sources="inputSources"
+            :todays-total-seconds="todaysTotalSeconds"
+        />
 
         <div v-if="showReferenceCheck">
             <div class="rounded-lg border p-4">
-                <h2 class="font-medium mb-2">Reference data check</h2>
-                <p>Languages: {{languages.map(l => l.name).join(', ')}}</p>
-                <p>Modalities: {{modalities.map(m => m.name).join(', ')}}</p>
-                <p>Sources: {{inputSources.map(s => s.name).join(', ')}}</p>
+                <h2 class="mb-2 font-medium">Reference data check</h2>
+                <p>Languages: {{ languages.map((l) => l.name).join(', ') }}</p>
+                <p>
+                    Modalities: {{ modalities.map((m) => m.name).join(', ') }}
+                </p>
+                <p>Sources: {{ inputSources.map((s) => s.name).join(', ') }}</p>
             </div>
         </div>
 
-        <p v-if="sessions.length > 0" class="text-sm text-muted-foreground text-center">
-            Last logged: {{ sessions[0].modality.name }} — {{ sessions[0].input_source.name }}, {{
-                formatLastLogged(sessions[0].started_at) }}
+        <p
+            v-if="sessions.length > 0"
+            class="text-center text-sm text-muted-foreground"
+        >
+            Last logged: {{ sessions[0].modality.name }} —
+            {{ sessions[0].input_source.name }},
+            {{ formatLastLogged(sessions[0].started_at) }}
         </p>
 
         <!--
@@ -121,6 +135,5 @@ const showReferenceCheck = ref(false);
         </div>
         <SessionFormDialog :languages="languages" :modalities="modalities" :input-sources="inputSources"
             :tags="tags" :session="editingSession" @close="editingSession = null" />
-    -->
-    </div>
+    --></div>
 </template>

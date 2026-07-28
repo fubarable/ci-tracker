@@ -6,7 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
 import { useTimerStore } from '@/stores/timer';
 
@@ -20,13 +24,18 @@ const props = defineProps<{
 const timer = useTimerStore();
 
 // --- idle-state form selections (browser-only state; not Pinia-worthy) ---
-const languageId = ref<string>(props.languages.length === 1 ? String(props.languages[0].id) : '');
+const languageId = ref<string>(
+    props.languages.length === 1 ? String(props.languages[0].id) : '',
+);
 const modalityId = ref<string>('');
 const inputSourceId = ref<string>('');
 const title = ref<string>('');
 
-const canStart = computed(() =>
-    languageId.value !== '' && modalityId.value !== '' && inputSourceId.value !== ''
+const canStart = computed(
+    () =>
+        languageId.value !== '' &&
+        modalityId.value !== '' &&
+        inputSourceId.value !== '',
 );
 
 const todaysTotalDisplay = computed(() => {
@@ -60,11 +69,14 @@ const elapsedDisplay = computed(() => {
     return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 });
 
-const statusColor = computed(() => ({
-    idle: 'bg-muted text-muted-foreground',
-    running: 'bg-green-600 text-white',
-    paused: 'bg-amber-500 text-white',
-}[timer.status]));
+const statusColor = computed(
+    () =>
+        ({
+            idle: 'bg-muted text-muted-foreground',
+            running: 'bg-green-600 text-white',
+            paused: 'bg-amber-500 text-white',
+        })[timer.status],
+);
 </script>
 
 <template>
@@ -74,7 +86,7 @@ const statusColor = computed(() => ({
             <Badge :class="statusColor">{{ timer.status }}</Badge>
         </CardHeader>
 
-        <CardContent class="text-center space-y-1">
+        <CardContent class="space-y-1 text-center">
             <div class="text-2xl text-muted-foreground">
                 Today's total: {{ todaysTotalDisplay }}
             </div>
@@ -89,7 +101,11 @@ const statusColor = computed(() => ({
                                 <SelectValue placeholder="Select..." />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem v-for="m in modalities" :key="m.id" :value="String(m.id)">
+                                <SelectItem
+                                    v-for="m in modalities"
+                                    :key="m.id"
+                                    :value="String(m.id)"
+                                >
                                     {{ m.name }}
                                 </SelectItem>
                             </SelectContent>
@@ -102,7 +118,11 @@ const statusColor = computed(() => ({
                                 <SelectValue placeholder="Select..." />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem v-for="s in inputSources" :key="s.id" :value="String(s.id)">
+                                <SelectItem
+                                    v-for="s in inputSources"
+                                    :key="s.id"
+                                    :value="String(s.id)"
+                                >
                                     {{ s.name }}
                                 </SelectItem>
                             </SelectContent>
@@ -115,7 +135,11 @@ const statusColor = computed(() => ({
                                 <SelectValue placeholder="Select..." />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem v-for="l in languages" :key="l.id" :value="String(l.id)">
+                                <SelectItem
+                                    v-for="l in languages"
+                                    :key="l.id"
+                                    :value="String(l.id)"
+                                >
                                     {{ l.name }}
                                 </SelectItem>
                             </SelectContent>
@@ -124,27 +148,48 @@ const statusColor = computed(() => ({
                 </div>
 
                 <div class="space-y-2">
-                    <Label>Title <span class="text-muted-foreground">(optional)</span></Label>
-                    <Input v-model="title" placeholder='e.g. "DS Intermediate #312"' />
+                    <Label
+                        >Title
+                        <span class="text-muted-foreground"
+                            >(optional)</span
+                        ></Label
+                    >
+                    <Input
+                        v-model="title"
+                        placeholder='e.g. "DS Intermediate #312"'
+                    />
                 </div>
 
-                <Button :disabled="!canStart" class="w-full sm:w-auto" @click="onStart">
+                <Button
+                    :disabled="!canStart"
+                    class="w-full sm:w-auto"
+                    @click="onStart"
+                >
                     Start
                 </Button>
             </template>
 
             <!-- RUNNING / PAUSED: clock and controls -->
             <template v-else>
-                <div class="text-center space-y-1">
-                    <div class="text-7xl font-mono tabular-nums text-center">{{ elapsedDisplay }}</div>
+                <div class="space-y-1 text-center">
+                    <div class="text-center font-mono text-7xl tabular-nums">
+                        {{ elapsedDisplay }}
+                    </div>
                     <div class="text-sm text-muted-foreground">
-                        {{ timer.session?.modality.name }} — {{ timer.session?.input_source.name }}
-                        <template v-if="timer.session?.title"> · {{ timer.session.title }}</template>
+                        {{ timer.session?.modality.name }} —
+                        {{ timer.session?.input_source.name }}
+                        <template v-if="timer.session?.title">
+                            · {{ timer.session.title }}</template
+                        >
                     </div>
                 </div>
 
                 <div class="flex justify-center gap-3">
-                    <Button v-if="timer.status === 'running'" variant="outline" @click="timer.pause()">
+                    <Button
+                        v-if="timer.status === 'running'"
+                        variant="outline"
+                        @click="timer.pause()"
+                    >
                         Pause
                     </Button>
                     <Button v-else variant="outline" @click="timer.resume()">
