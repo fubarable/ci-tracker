@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
+import TimerPanel from '@/components/TimerPanel.vue';
 import { useTimerStore } from '@/stores/timer';
 import type { LiveSession } from '@/stores/timer';
-import { Button } from '@/components/ui/button';
-import TimerPanel from '@/components/TimerPanel.vue';
-import SessionFormDialog from '@/components/SessionFormDialog.vue';
-import { router } from '@inertiajs/vue3';
-// import { Link } from '@inertiajs/vue3';
-
-// const editingSession = ref<null | typeof props.sessions[number]>(null);
 
 const props = defineProps<{
     languages: Array<{ id: number; name: string; code: string }>;

@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
 import { router } from '@inertiajs/vue3';
+import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 
 export interface LiveSession {
@@ -22,10 +22,15 @@ export const useTimerStore = defineStore('timer', () => {
     // --- hydration (called by the page whenever props arrive) ---
     function hydrate(liveSession: LiveSession | null) {
         session.value = liveSession;
-        if (typeof window === 'undefined') return;   // SSR: no ticker
+
+        if (typeof window === 'undefined') {
+return;
+}   // SSR: no ticker
+
         if (liveSession && ticker === null) {
             ticker = window.setInterval(() => (now.value = Date.now()), 1000);
         }
+
         if (!liveSession && ticker !== null) {
             window.clearInterval(ticker);
             ticker = null;
@@ -34,18 +39,25 @@ export const useTimerStore = defineStore('timer', () => {
 
     // --- derived state ---
     const status = computed<'idle' | 'running' | 'paused'>(() => {
-        if (!session.value) return 'idle';
+        if (!session.value) {
+return 'idle';
+}
+
         return session.value.paused_at ? 'paused' : 'running';
     });
 
     const elapsedSeconds = computed<number>(() => {
-        if (!session.value) return 0;
+        if (!session.value) {
+return 0;
+}
+
         const startedMs = Date.parse(session.value.started_at);
         const pauseBase = session.value.paused_duration_seconds;
         // If currently paused, elapsed freezes at the pause moment
         const referenceMs = session.value.paused_at
             ? Date.parse(session.value.paused_at)
             : now.value;
+
         return Math.max(0, Math.floor((referenceMs - startedMs) / 1000) - pauseBase);
     });
 

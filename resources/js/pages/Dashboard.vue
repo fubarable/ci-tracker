@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { dashboard } from '@/routes';
-import { Bar } from 'vue-chartjs';
-import { ref, watch, computed } from 'vue';
+import { router } from '@inertiajs/vue3';
 import {
     Chart as ChartJS,
     Title,
@@ -12,10 +10,12 @@ import {
     CategoryScale,
     LinearScale,
 } from 'chart.js';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ref, watch, computed } from 'vue';
+import { Bar } from 'vue-chartjs';
 import MultiSelectCombobox from '@/components/MultiSelectCombobox.vue';
-import { router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { dashboard } from '@/routes';
 
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
@@ -56,11 +56,13 @@ watch([selectedLanguages, selectedModalities, selectedSources], applyDashboardFi
 function formatHM(totalSeconds: number): string {
     const h = Math.floor(totalSeconds / 3600);
     const m = Math.floor((totalSeconds % 3600) / 60);
+
     return `${h}h ${m}m`;
 }
 
 function shortDate(dateStr: string): string {
     const d = new Date(dateStr + 'T00:00:00');
+
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 

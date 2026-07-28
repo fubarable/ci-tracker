@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface TagOption {
     id: number;
@@ -31,9 +31,13 @@ function toggleExisting(tag: TagOption) {
 
 function onEnter() {
     const name = inputValue.value.trim();
-    if (!name) return;
+
+    if (!name) {
+return;
+}
 
     const existing = props.tags.find((t) => t.name.toLowerCase() === name.toLowerCase());
+
     if (existing) {
         if (!props.modelValue.includes(existing.id)) {
             emit('update:modelValue', [...props.modelValue, existing.id]);
@@ -41,6 +45,7 @@ function onEnter() {
     } else {
         emit('newTag', name); // parent creates it, then adds the returned id
     }
+
     inputValue.value = '';
 }
 </script>

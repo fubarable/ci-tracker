@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { Check, ChevronsUpDown, X } from '@lucide/vue';
+import { ref, computed } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-    Popover, PopoverContent, PopoverTrigger,
-} from '@/components/ui/popover';
-import {
     Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
 } from '@/components/ui/command';
+import {
+    Popover, PopoverContent, PopoverTrigger,
+} from '@/components/ui/popover';
 
 interface Option {
     id: number;

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import SessionFormDialog from '@/components/SessionFormDialog.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import SessionFormDialog from '@/components/SessionFormDialog.vue';
 
 interface SessionRow {
     id: number;
@@ -82,13 +82,17 @@ function formatSessionDate(startedAt: string): string {
 }
 
 function formatDuration(s: SessionRow): string {
-    if (!s.ended_at) return 'in progress';
+    if (!s.ended_at) {
+        return 'in progress';
+    }
+
     const totalSeconds = Math.max(
         0,
         Math.floor((Date.parse(s.ended_at) - Date.parse(s.started_at)) / 1000) - s.paused_duration_seconds
     );
     const m = Math.floor(totalSeconds / 60);
     const sec = totalSeconds % 60;
+
     return `${m}m ${sec}s`;
 }
 
@@ -102,12 +106,32 @@ function deleteSession(id: number) {
 
 function downloadCsv() {
     const params = new URLSearchParams();
-    if (languageId.value !== 'all') params.set('language_id', languageId.value);
-    if (modalityId.value !== 'all') params.set('modality_id', modalityId.value);
-    if (inputSourceId.value !== 'all') params.set('input_source_id', inputSourceId.value);
-    if (dateFrom.value) params.set('date_from', dateFrom.value);
-    if (dateTo.value) params.set('date_to', dateTo.value);
+
+    if (languageId.value !== 'all') {
+        params.set('language_id', languageId.value);
+    }
+
+    if (modalityId.value !== 'all') {
+        params.set('modality_id', modalityId.value);
+    }
+
+    if (inputSourceId.value !== 'all') {
+        params.set('input_source_id', inputSourceId.value);
+    }
+
+    if (dateFrom.value) {
+        params.set('date_from', dateFrom.value);
+    }
+
+    if (dateTo.value) {
+        params.set('date_to', dateTo.value);
+    }
+
     window.location.href = `/tracker/history/export?${params.toString()}`;
+}
+
+function decodeLabel(label: string): string {
+    return label.replace(/&laquo;/g, '«').replace(/&raquo;/g, '»');
 }
 </script>
 
@@ -209,7 +233,9 @@ function downloadCsv() {
             <div class="flex flex-wrap gap-1 mt-4">
                 <Button v-for="link in sessions.links" :key="link.label" variant="outline" size="sm"
                     :disabled="!link.url" :class="{ 'bg-accent': link.active }"
-                    @click="link.url && router.visit(link.url, { preserveState: true })" v-html="link.label" />
+                    @click="link.url && router.visit(link.url, { preserveState: true })">
+                    {{ decodeLabel(link.label) }}
+                </Button>
             </div>
         </div>
 

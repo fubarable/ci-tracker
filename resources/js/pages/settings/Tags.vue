@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 
 interface TagRow {
     id: number;
@@ -16,10 +16,15 @@ const props = defineProps<{ tags: TagRow[] }>();
 const newName = ref('');
 
 function addTag() {
-    if (!newName.value.trim()) return;
+    if (!newName.value.trim()) {
+return;
+}
+
     router.post('/settings/tags', { name: newName.value }, {
         preserveScroll: true,
-        onSuccess: () => { newName.value = ''; },
+        onSuccess: () => {
+ newName.value = ''; 
+},
     });
 }
 
@@ -27,6 +32,7 @@ function remove(tag: TagRow) {
     const msg = tag.ci_sessions_count > 0
         ? `Delete "${tag.name}"? It will be removed from ${tag.ci_sessions_count} session(s).`
         : `Delete "${tag.name}"?`;
+
     if (confirm(msg)) {
         router.delete(`/settings/tags/${tag.id}`, { preserveScroll: true });
     }

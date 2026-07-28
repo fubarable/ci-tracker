@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useTimerStore } from '@/stores/timer';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import { useTimerStore } from '@/stores/timer';
 
 const props = defineProps<{
     languages: Array<{ id: number; name: string }>;
@@ -36,6 +36,7 @@ const todaysTotalDisplay = computed(() => {
     const h = Math.floor(total / 3600);
     const m = Math.floor((total % 3600) / 60);
     const s = total % 60;
+
     return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 });
 
@@ -55,6 +56,7 @@ const elapsedDisplay = computed(() => {
     const h = Math.floor(total / 3600);
     const m = Math.floor((total % 3600) / 60);
     const s = total % 60;
+
     return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 });
 

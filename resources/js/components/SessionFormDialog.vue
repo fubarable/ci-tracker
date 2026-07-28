@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { ref, computed, watch } from 'vue';
+import TagInput from '@/components/TagInput.vue';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import TagInput from '@/components/TagInput.vue';
 
 interface EditableSession {
     id: number;
@@ -52,12 +52,18 @@ const localTags = ref<Array<{ id: number; name: string }>>([...props.tags]);
 // Pre-fill from the session prop, converting DB datetime strings to
 // the "YYYY-MM-DDTHH:mm" shape datetime-local inputs expect.
 function toLocalInput(value: string | null): string {
-    if (!value) return '';
+    if (!value) {
+return '';
+}
+
     return value.slice(0, 16).replace(' ', 'T');
 }
 
 function hydrateFromSession() {
-    if (!props.session) return;
+    if (!props.session) {
+return;
+}
+
     languageId.value = String(props.session.language_id);
     modalityId.value = String(props.session.modality_id);
     inputSourceId.value = String(props.session.input_source_id);
@@ -95,9 +101,14 @@ function submit() {
     };
     const options = {
         preserveScroll: true,
-        onSuccess: () => { open.value = false; resetForm(); emit('close'); },
-        onError: (e: Record<string, string>) => { errors.value = e; },
+        onSuccess: () => {
+ open.value = false; resetForm(); emit('close'); 
+},
+        onError: (e: Record<string, string>) => {
+ errors.value = e; 
+},
     };
+
     if (isEditMode.value && props.session) {
         router.patch(`/tracker/${props.session.id}`, payload, options);
     } else {
@@ -115,13 +126,17 @@ function resetForm() {
         title.value = '';
         notes.value = '';
     }
+
     selectedTagIds.value = [];
     errors.value = {};
 }
 
 function onOpenChange(val: boolean) {
     open.value = val;
-    if (!val) emit('close');
+
+    if (!val) {
+emit('close');
+}
 }
 
 async function handleNewTag(name: string) {
@@ -138,6 +153,7 @@ async function handleNewTag(name: string) {
     if (!localTags.value.some((t) => t.id === tag.id)) {
         localTags.value.push(tag);
     }
+
     selectedTagIds.value = [...selectedTagIds.value, tag.id];
 }
 </script>

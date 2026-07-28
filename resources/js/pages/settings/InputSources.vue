@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ref } from 'vue';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 
 interface Source {
     id: number;
@@ -19,11 +19,18 @@ const newName = ref('');
 const errors = ref<Record<string, string>>({});
 
 function addSource() {
-    if (!newName.value.trim()) return;
+    if (!newName.value.trim()) {
+return;
+}
+
     router.post('/settings/input-sources', { name: newName.value }, {
         preserveScroll: true,
-        onSuccess: () => { newName.value = ''; errors.value = {}; },
-        onError: (e) => { errors.value = e; },
+        onSuccess: () => {
+ newName.value = ''; errors.value = {}; 
+},
+        onError: (e) => {
+ errors.value = e; 
+},
     });
 }
 
