@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Inertia\Inertia;
 use App\Models\User;
+use App\Models\Language;
+use App\Models\Modality;
+use App\Models\InputSource;
 
 class DashboardController extends Controller
 {
@@ -13,17 +18,35 @@ class DashboardController extends Controller
         $user = $request->user();
         $tz = $user->timezone ?? config('app.timezone');
 
+        $filters = [
+            'language_ids' => $request->input('language_ids', []),
+            'modality_ids' => $request->input('modality_ids', []),
+            'input_source_ids' => $request->input('input_source_ids', []),
+        ];
+
         return Inertia::render('Dashboard', [
-            'summary' => $this->summaryCards($user, $tz),
-            'dailyTotals' => $this->dailyTotals($user, $tz),
-            'bySource' => $this->breakdownBy($user, 'inputSource', 'name'),
-            'byModality' => $this->breakdownBy($user, 'modality', 'name'),
+            'summary' => $this->summaryCards($user, $tz, $filters),
+            'dailyTotals' => $this->dailyTotals($user, $tz, 30, $filters),
+            'growth' => $this->growthData($user, $tz, $filters),
+            'bySource' => $this->breakdownBy($user, 'inputSource', 'name', $filters),
+            'byModality' => $this->breakdownBy($user, 'modality', 'name', $filters),
+            'languages' => Language::where('is_active', true)->orderBy('sort_order')->get(),
+            'modalities' => Modality::orderBy('id')->get(),
+            'inputSources' => InputSource::where('is_active', true)
+                ->where(function ($q) use ($request) {
+                    $q->whereNull('user_id')->orWhere('user_id', $request->user()->id);
+                })
+                ->orderBy('name')->get(),
+            'filters' => $filters,
         ]);
     }
 
-    private function summaryCards(User $user, string $tz): array
+    private function summaryCards(User $user, string $tz, array $filters): array
     {
-        $sessions = $user->ciSessions()->whereNotNull('ended_at')->get();
+        $sessions = $this->applyFilters(
+            $user->ciSessions()->whereNotNull('ended_at'),
+            $filters
+        )->get();
 
         $totalSeconds = $sessions->sum(
             fn($s) => $s->started_at->diffInSeconds($s->ended_at) - $s->paused_duration_seconds
@@ -49,14 +72,14 @@ class DashboardController extends Controller
         ];
     }
 
-    private function dailyTotals(User $user, string $tz, int $days = 30): array
+    private function dailyTotals(User $user, string $tz, int $days = 30, array $filters): array
     {
         $start = now($tz)->subDays($days - 1)->startOfDay();
 
-        $sessions = $user->ciSessions()
-            ->whereNotNull('ended_at')
-            ->where('started_at', '>=', $start->copy()->utc())
-            ->get();
+        $sessions = $this->applyFilters(
+            $user->ciSessions()->whereNotNull('ended_at')->where('started_at', '>=', $start->copy()->utc()),
+            $filters
+        )->get();
 
         $byDay = [];
         for ($i = 0; $i < $days; $i++) {
@@ -78,12 +101,12 @@ class DashboardController extends Controller
         ])->values()->all();
     }
 
-    private function breakdownBy(User $user, string $relation, string $labelField): array
+    private function breakdownBy(User $user, string $relation, string $labelField, array $filters): array
     {
-        $sessions = $user->ciSessions()
-            ->whereNotNull('ended_at')
-            ->with($relation)
-            ->get();
+        $sessions = $this->applyFilters(
+            $user->ciSessions()->whereNotNull('ended_at')->with($relation),
+            $filters
+        )->get();
 
         $totals = [];
         foreach ($sessions as $s) {
@@ -98,5 +121,25 @@ class DashboardController extends Controller
             'label' => $label,
             'seconds' => $seconds,
         ])->values()->all();
+    }
+
+    private function applyFilters(Builder|Relation $query, array $filters)
+    {
+        if (!empty($filters['language_ids'])) {
+            $query->whereIn('language_id', $filters['language_ids']);
+        }
+        if (!empty($filters['modality_ids'])) {
+            $query->whereIn('modality_id', $filters['modality_ids']);
+        }
+        if (!empty($filters['input_source_ids'])) {
+            $query->whereIn('input_source_id', $filters['input_source_ids']);
+        }
+        return $query;
+    }
+
+    private function growthData($user, string $tz, array $filters): array
+    {
+        // Placeholder — full implementation comes with the cumulative growth chart (Part 3)
+        return [];
     }
 }

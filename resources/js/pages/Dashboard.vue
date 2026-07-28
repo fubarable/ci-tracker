@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/vue3';
 import { dashboard } from '@/routes';
 import { Bar } from 'vue-chartjs';
+import { ref, watch, computed } from 'vue';
 import {
     Chart as ChartJS,
     Title,
@@ -12,6 +13,10 @@ import {
     LinearScale,
 } from 'chart.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import MultiSelectCombobox from '@/components/MultiSelectCombobox.vue';
+import { router } from '@inertiajs/vue3';
+import { Button } from '@/components/ui/button';
+
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
@@ -33,7 +38,20 @@ const props = defineProps<{
     dailyTotals: Array<{ date: string; seconds: number }>;
     bySource: Array<{ label: string; seconds: number }>;
     byModality: Array<{ label: string; seconds: number }>;
+    languages: Array<{ id: number; name: string }>;
+    modalities: Array<{ id: number; name: string }>;
+    inputSources: Array<{ id: number; name: string }>;
+    filters: {
+        language_ids: number[];
+        modality_ids: number[];
+        input_source_ids: number[];
+    };
 }>();
+
+const selectedLanguages = ref<number[]>(props.filters.language_ids ?? []);
+const selectedModalities = ref<number[]>(props.filters.modality_ids ?? []);
+const selectedSources = ref<number[]>(props.filters.input_source_ids ?? []);
+watch([selectedLanguages, selectedModalities, selectedSources], applyDashboardFilters, { deep: true });
 
 function formatHM(totalSeconds: number): string {
     const h = Math.floor(totalSeconds / 3600);
@@ -46,7 +64,7 @@ function shortDate(dateStr: string): string {
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
-const dailyChartData = {
+const dailyChartData = computed(() => ({
     labels: props.dailyTotals.map((d) => shortDate(d.date)),
     datasets: [
         {
@@ -56,7 +74,7 @@ const dailyChartData = {
             borderRadius: 4,
         },
     ],
-};
+}));
 
 const dailyChartOptions = {
     responsive: true,
@@ -90,34 +108,70 @@ const breakdownChartOptions = {
         x: { beginAtZero: true, ticks: { precision: 0 } },
     },
 };
+
+function applyDashboardFilters() {
+    router.get('/dashboard', {
+        language_ids: selectedLanguages.value,
+        modality_ids: selectedModalities.value,
+        input_source_ids: selectedSources.value,
+    }, { preserveState: true, replace: true });
+}
+
+function clearDashboardFilters() {
+    selectedLanguages.value = [];
+    selectedModalities.value = [];
+    selectedSources.value = [];
+    applyDashboardFilters();
+}
 </script>
 
 <template>
+
     <Head title="Dashboard" />
     <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-        <!-- Summary cards -->
+        <!-- Summary cards + filters -->
         <div class="grid gap-4 md:grid-cols-4">
             <Card>
-                <CardHeader><CardTitle class="text-sm text-muted-foreground">Today</CardTitle></CardHeader>
+                <CardHeader>
+                    <CardTitle class="text-sm text-muted-foreground">Today</CardTitle>
+                </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{ formatHM(summary.todaySeconds) }}</CardContent>
             </Card>
             <Card>
-                <CardHeader><CardTitle class="text-sm text-muted-foreground">This week</CardTitle></CardHeader>
+                <CardHeader>
+                    <CardTitle class="text-sm text-muted-foreground">This week</CardTitle>
+                </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{ formatHM(summary.weekSeconds) }}</CardContent>
             </Card>
             <Card>
-                <CardHeader><CardTitle class="text-sm text-muted-foreground">All time</CardTitle></CardHeader>
+                <CardHeader>
+                    <CardTitle class="text-sm text-muted-foreground">All time</CardTitle>
+                </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{ formatHM(summary.allTimeSeconds) }}</CardContent>
             </Card>
             <Card>
-                <CardHeader><CardTitle class="text-sm text-muted-foreground">Total sessions</CardTitle></CardHeader>
+                <CardHeader>
+                    <CardTitle class="text-sm text-muted-foreground">Total sessions</CardTitle>
+                </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{ summary.sessionCount }}</CardContent>
             </Card>
         </div>
 
+        <!-- Filters -->
+        <div class="flex flex-wrap items-center gap-3">
+            <MultiSelectCombobox v-model="selectedLanguages" :options="languages" placeholder="Languages"
+                class="w-40" />
+            <MultiSelectCombobox v-model="selectedModalities" :options="modalities" placeholder="Modalities"
+                class="w-40" />
+            <MultiSelectCombobox v-model="selectedSources" :options="inputSources" placeholder="Sources" class="w-40" />
+            <Button variant="ghost" size="sm" @click="clearDashboardFilters">Clear filters</Button>
+        </div>
+
         <!-- Daily totals, last 30 days -->
         <Card>
-            <CardHeader><CardTitle>Last 30 days</CardTitle></CardHeader>
+            <CardHeader>
+                <CardTitle>Last 30 days</CardTitle>
+            </CardHeader>
             <CardContent>
                 <div class="h-64">
                     <Bar :data="dailyChartData" :options="dailyChartOptions" />
@@ -128,7 +182,9 @@ const breakdownChartOptions = {
         <!-- Breakdown by source and modality -->
         <div class="grid gap-4 md:grid-cols-2">
             <Card>
-                <CardHeader><CardTitle>By source</CardTitle></CardHeader>
+                <CardHeader>
+                    <CardTitle>By source</CardTitle>
+                </CardHeader>
                 <CardContent>
                     <div class="h-64">
                         <Bar :data="breakdownChartData(bySource)" :options="breakdownChartOptions" />
@@ -136,7 +192,9 @@ const breakdownChartOptions = {
                 </CardContent>
             </Card>
             <Card>
-                <CardHeader><CardTitle>By modality</CardTitle></CardHeader>
+                <CardHeader>
+                    <CardTitle>By modality</CardTitle>
+                </CardHeader>
                 <CardContent>
                     <div class="h-64">
                         <Bar :data="breakdownChartData(byModality)" :options="breakdownChartOptions" />
