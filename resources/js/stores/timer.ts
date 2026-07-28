@@ -24,8 +24,8 @@ export const useTimerStore = defineStore('timer', () => {
         session.value = liveSession;
 
         if (typeof window === 'undefined') {
-return;
-}   // SSR: no ticker
+            return;
+        } // SSR: no ticker
 
         if (liveSession && ticker === null) {
             ticker = window.setInterval(() => (now.value = Date.now()), 1000);
@@ -40,16 +40,16 @@ return;
     // --- derived state ---
     const status = computed<'idle' | 'running' | 'paused'>(() => {
         if (!session.value) {
-return 'idle';
-}
+            return 'idle';
+        }
 
         return session.value.paused_at ? 'paused' : 'running';
     });
 
     const elapsedSeconds = computed<number>(() => {
         if (!session.value) {
-return 0;
-}
+            return 0;
+        }
 
         const startedMs = Date.parse(session.value.started_at);
         const pauseBase = session.value.paused_duration_seconds;
@@ -58,7 +58,10 @@ return 0;
             ? Date.parse(session.value.paused_at)
             : now.value;
 
-        return Math.max(0, Math.floor((referenceMs - startedMs) / 1000) - pauseBase);
+        return Math.max(
+            0,
+            Math.floor((referenceMs - startedMs) / 1000) - pauseBase,
+        );
     });
 
     // --- actions: request transitions; server decides ---
@@ -83,5 +86,14 @@ return 0;
         router.post('/tracker/stop', {}, { preserveScroll: true });
     }
 
-    return { session, status, elapsedSeconds, hydrate, start, pause, resume, stop };
+    return {
+        session,
+        status,
+        elapsedSeconds,
+        hydrate,
+        start,
+        pause,
+        resume,
+        stop,
+    };
 });

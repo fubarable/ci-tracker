@@ -4,10 +4,17 @@ import { ref, computed } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-    Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
 } from '@/components/ui/command';
 import {
-    Popover, PopoverContent, PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from '@/components/ui/popover';
 
 interface Option {
@@ -26,7 +33,7 @@ const emit = defineEmits<{ 'update:modelValue': [number[]] }>();
 const open = ref(false);
 
 const selectedOptions = computed(() =>
-    props.options.filter((o) => props.modelValue.includes(o.id))
+    props.options.filter((o) => props.modelValue.includes(o.id)),
 );
 
 function toggle(id: number) {
@@ -37,7 +44,10 @@ function toggle(id: number) {
 }
 
 function remove(id: number) {
-    emit('update:modelValue', props.modelValue.filter((v) => v !== id));
+    emit(
+        'update:modelValue',
+        props.modelValue.filter((v) => v !== id),
+    );
 }
 </script>
 
@@ -59,7 +69,9 @@ function remove(id: number) {
             </PopoverTrigger>
             <PopoverContent class="w-full p-0" align="start">
                 <Command>
-                    <CommandInput :placeholder="`Search ${placeholder?.toLowerCase() ?? 'options'}...`" />
+                    <CommandInput
+                        :placeholder="`Search ${placeholder?.toLowerCase() ?? 'options'}...`"
+                    />
                     <CommandList>
                         <CommandEmpty>No results found.</CommandEmpty>
                         <CommandGroup>
@@ -71,7 +83,11 @@ function remove(id: number) {
                             >
                                 <Check
                                     class="mr-2 h-4 w-4"
-                                    :class="modelValue.includes(option.id) ? 'opacity-100' : 'opacity-0'"
+                                    :class="
+                                        modelValue.includes(option.id)
+                                            ? 'opacity-100'
+                                            : 'opacity-0'
+                                    "
                                 />
                                 {{ option.name }}
                             </CommandItem>

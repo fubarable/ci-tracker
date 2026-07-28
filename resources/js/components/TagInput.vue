@@ -14,18 +14,23 @@ const props = defineProps<{
     modelValue: number[]; // selected tag ids
 }>();
 
-const emit = defineEmits<{ 'update:modelValue': [number[]]; 'newTag': [string] }>();
+const emit = defineEmits<{
+    'update:modelValue': [number[]];
+    newTag: [string];
+}>();
 
 const inputValue = ref('');
 
-const selectedTags = () => props.tags.filter((t) => props.modelValue.includes(t.id));
+const selectedTags = () =>
+    props.tags.filter((t) => props.modelValue.includes(t.id));
 
 function toggleExisting(tag: TagOption) {
     const isSelected = props.modelValue.includes(tag.id);
-    emit('update:modelValue',
+    emit(
+        'update:modelValue',
         isSelected
             ? props.modelValue.filter((id) => id !== tag.id)
-            : [...props.modelValue, tag.id]
+            : [...props.modelValue, tag.id],
     );
 }
 
@@ -33,10 +38,12 @@ function onEnter() {
     const name = inputValue.value.trim();
 
     if (!name) {
-return;
-}
+        return;
+    }
 
-    const existing = props.tags.find((t) => t.name.toLowerCase() === name.toLowerCase());
+    const existing = props.tags.find(
+        (t) => t.name.toLowerCase() === name.toLowerCase(),
+    );
 
     if (existing) {
         if (!props.modelValue.includes(existing.id)) {
@@ -53,18 +60,33 @@ return;
 <template>
     <div class="space-y-2">
         <div class="flex flex-wrap gap-1">
-            <Badge v-for="tag in selectedTags()" :key="tag.id" variant="secondary" class="cursor-pointer"
-                @click="toggleExisting(tag)">
+            <Badge
+                v-for="tag in selectedTags()"
+                :key="tag.id"
+                variant="secondary"
+                class="cursor-pointer"
+                @click="toggleExisting(tag)"
+            >
                 {{ tag.name }} ✕
             </Badge>
         </div>
-        <Input v-model="inputValue" placeholder="Type a tag..." @keyup.enter="onEnter" class="flex-1" />
+        <Input
+            v-model="inputValue"
+            placeholder="Type a tag..."
+            @keyup.enter="onEnter"
+            class="flex-1"
+        />
         <Button type="button" variant="outline" size="sm" @click="onEnter">
             Add
         </Button>
         <div class="flex flex-wrap gap-1">
-            <Badge v-for="tag in tags.filter((t) => !modelValue.includes(t.id))" :key="tag.id" variant="outline"
-                class="cursor-pointer text-muted-foreground" @click="toggleExisting(tag)">
+            <Badge
+                v-for="tag in tags.filter((t) => !modelValue.includes(t.id))"
+                :key="tag.id"
+                variant="outline"
+                class="cursor-pointer text-muted-foreground"
+                @click="toggleExisting(tag)"
+            >
                 + {{ tag.name }}
             </Badge>
         </div>

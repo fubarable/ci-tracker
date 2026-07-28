@@ -4,12 +4,22 @@ import { ref, computed, watch } from 'vue';
 import TagInput from '@/components/TagInput.vue';
 import { Button } from '@/components/ui/button';
 import {
-    Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogTrigger,
+    DialogFooter,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
 
 interface EditableSession {
@@ -29,7 +39,7 @@ const props = defineProps<{
     modalities: Array<{ id: number; name: string }>;
     inputSources: Array<{ id: number; name: string }>;
     tags: Array<{ id: number; name: string }>;
-    session?: EditableSession | null;   // present = edit mode, absent = create mode
+    session?: EditableSession | null; // present = edit mode, absent = create mode
 }>();
 
 const emit = defineEmits<{ close: [] }>();
@@ -53,16 +63,16 @@ const localTags = ref<Array<{ id: number; name: string }>>([...props.tags]);
 // the "YYYY-MM-DDTHH:mm" shape datetime-local inputs expect.
 function toLocalInput(value: string | null): string {
     if (!value) {
-return '';
-}
+        return '';
+    }
 
     return value.slice(0, 16).replace(' ', 'T');
 }
 
 function hydrateFromSession() {
     if (!props.session) {
-return;
-}
+        return;
+    }
 
     languageId.value = String(props.session.language_id);
     modalityId.value = String(props.session.modality_id);
@@ -74,18 +84,29 @@ return;
     selectedTagIds.value = props.session.tag_ids ?? [];
 }
 
-watch(() => props.session, () => {
-    hydrateFromSession();
-    open.value = !!props.session;
-}, { immediate: true });
+watch(
+    () => props.session,
+    () => {
+        hydrateFromSession();
+        open.value = !!props.session;
+    },
+    { immediate: true },
+);
 
-watch(() => props.tags, (newTags) => {
-    localTags.value = [...newTags];
-});
+watch(
+    () => props.tags,
+    (newTags) => {
+        localTags.value = [...newTags];
+    },
+);
 
-const canSubmit = computed(() =>
-    languageId.value !== '' && modalityId.value !== '' && inputSourceId.value !== '' &&
-    startedAt.value !== '' && endedAt.value !== ''
+const canSubmit = computed(
+    () =>
+        languageId.value !== '' &&
+        modalityId.value !== '' &&
+        inputSourceId.value !== '' &&
+        startedAt.value !== '' &&
+        endedAt.value !== '',
 );
 
 function submit() {
@@ -102,11 +123,13 @@ function submit() {
     const options = {
         preserveScroll: true,
         onSuccess: () => {
- open.value = false; resetForm(); emit('close'); 
-},
+            open.value = false;
+            resetForm();
+            emit('close');
+        },
         onError: (e: Record<string, string>) => {
- errors.value = e; 
-},
+            errors.value = e;
+        },
     };
 
     if (isEditMode.value && props.session) {
@@ -118,7 +141,8 @@ function submit() {
 
 function resetForm() {
     if (!isEditMode.value) {
-        languageId.value = props.languages.length === 1 ? String(props.languages[0].id) : '';
+        languageId.value =
+            props.languages.length === 1 ? String(props.languages[0].id) : '';
         modalityId.value = '';
         inputSourceId.value = '';
         startedAt.value = '';
@@ -135,8 +159,8 @@ function onOpenChange(val: boolean) {
     open.value = val;
 
     if (!val) {
-emit('close');
-}
+        emit('close');
+    }
 }
 
 async function handleNewTag(name: string) {
@@ -144,7 +168,10 @@ async function handleNewTag(name: string) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content ?? '',
+            'X-CSRF-TOKEN':
+                document.querySelector<HTMLMetaElement>(
+                    'meta[name="csrf-token"]',
+                )?.content ?? '',
         },
         body: JSON.stringify({ name }),
     });
@@ -165,9 +192,15 @@ async function handleNewTag(name: string) {
         </DialogTrigger>
         <DialogContent class="sm:max-w-md">
             <DialogHeader>
-                <DialogTitle>{{ isEditMode ? 'Edit session' : 'Log a past session' }}</DialogTitle>
+                <DialogTitle>{{
+                    isEditMode ? 'Edit session' : 'Log a past session'
+                }}</DialogTitle>
                 <DialogDescription>
-                    {{ isEditMode ? 'Update the details of this session.' : 'Record a session you completed earlier.' }}
+                    {{
+                        isEditMode
+                            ? 'Update the details of this session.'
+                            : 'Record a session you completed earlier.'
+                    }}
                 </DialogDescription>
             </DialogHeader>
 
@@ -180,7 +213,11 @@ async function handleNewTag(name: string) {
                                 <SelectValue placeholder="Select..." />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem v-for="m in modalities" :key="m.id" :value="String(m.id)">
+                                <SelectItem
+                                    v-for="m in modalities"
+                                    :key="m.id"
+                                    :value="String(m.id)"
+                                >
                                     {{ m.name }}
                                 </SelectItem>
                             </SelectContent>
@@ -193,7 +230,11 @@ async function handleNewTag(name: string) {
                                 <SelectValue placeholder="Select..." />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem v-for="s in inputSources" :key="s.id" :value="String(s.id)">
+                                <SelectItem
+                                    v-for="s in inputSources"
+                                    :key="s.id"
+                                    :value="String(s.id)"
+                                >
                                     {{ s.name }}
                                 </SelectItem>
                             </SelectContent>
@@ -206,7 +247,11 @@ async function handleNewTag(name: string) {
                                 <SelectValue placeholder="Select..." />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem v-for="l in languages" :key="l.id" :value="String(l.id)">
+                                <SelectItem
+                                    v-for="l in languages"
+                                    :key="l.id"
+                                    :value="String(l.id)"
+                                >
                                     {{ l.name }}
                                 </SelectItem>
                             </SelectContent>
@@ -224,20 +269,36 @@ async function handleNewTag(name: string) {
                         <Input v-model="endedAt" type="datetime-local" />
                     </div>
                 </div>
-                <p v-if="errors.ended_at" class="text-sm text-destructive">{{ errors.ended_at }}</p>
+                <p v-if="errors.ended_at" class="text-sm text-destructive">
+                    {{ errors.ended_at }}
+                </p>
 
                 <div class="space-y-2">
-                    <Label>Title <span class="text-muted-foreground">(optional)</span></Label>
+                    <Label
+                        >Title
+                        <span class="text-muted-foreground"
+                            >(optional)</span
+                        ></Label
+                    >
                     <Input v-model="title" />
                 </div>
 
                 <div class="space-y-2">
-                    <Label>Notes <span class="text-muted-foreground">(optional)</span></Label>
+                    <Label
+                        >Notes
+                        <span class="text-muted-foreground"
+                            >(optional)</span
+                        ></Label
+                    >
                     <Input v-model="notes" />
                 </div>
                 <div class="space-y-2">
                     <Label>Tags</Label>
-                    <TagInput v-model="selectedTagIds" :tags="localTags" @new-tag="handleNewTag" />
+                    <TagInput
+                        v-model="selectedTagIds"
+                        :tags="localTags"
+                        @new-tag="handleNewTag"
+                    />
                 </div>
             </div>
 
