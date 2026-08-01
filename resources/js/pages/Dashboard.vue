@@ -18,10 +18,26 @@ import { Bar, Line } from 'vue-chartjs';
 import MultiSelectCombobox from '@/components/MultiSelectCombobox.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { dashboard } from '@/routes';
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Filler);
+ChartJS.register(
+    Title,
+    Tooltip,
+    Legend,
+    BarElement,
+    LineElement,
+    PointElement,
+    CategoryScale,
+    LinearScale,
+    Filler,
+);
 
 defineOptions({
     layout: {
@@ -60,7 +76,7 @@ const selectedSources = ref<number[]>(props.filters.input_source_ids ?? []);
 watch(
     [selectedLanguages, selectedModalities, selectedSources, selectedRange],
     applyDashboardFilters,
-    { deep: true }
+    { deep: true },
 );
 
 function formatHM(totalSeconds: number): string {
@@ -122,12 +138,16 @@ const breakdownChartOptions = {
 };
 
 function applyDashboardFilters() {
-    router.get('/dashboard', {
-        language_ids: selectedLanguages.value,
-        modality_ids: selectedModalities.value,
-        input_source_ids: selectedSources.value,
-        range: selectedRange.value,
-    }, { preserveState: true, replace: true });
+    router.get(
+        '/dashboard',
+        {
+            language_ids: selectedLanguages.value,
+            modality_ids: selectedModalities.value,
+            input_source_ids: selectedSources.value,
+            range: selectedRange.value,
+        },
+        { preserveState: true, replace: true },
+    );
 }
 
 function clearDashboardFilters() {
@@ -144,19 +164,26 @@ function growthDateLabel(dateStr: string, allDates: string[]): string {
     const spanDays = (last.getTime() - first.getTime()) / (1000 * 60 * 60 * 24);
 
     if (spanDays > 365) {
-        return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+        return d.toLocaleDateString(undefined, {
+            month: 'short',
+            year: 'numeric',
+        });
     }
+
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
 const growthChartData = computed(() => {
     const dates = props.growth.map((g) => g.date);
+
     return {
         labels: dates.map((d) => growthDateLabel(d, dates)),
         datasets: [
             {
                 label: 'Cumulative hours',
-                data: props.growth.map((g) => Math.round((g.cumulativeSeconds / 3600) * 10) / 10),
+                data: props.growth.map(
+                    (g) => Math.round((g.cumulativeSeconds / 3600) * 10) / 10,
+                ),
                 borderColor: '#8b5cf6',
                 backgroundColor: 'rgba(139, 92, 246, 0.1)',
                 fill: true,
@@ -179,14 +206,17 @@ const growthChartOptions = {
 </script>
 
 <template>
-
     <Head title="Dashboard" />
-    <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+    <div
+        class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+    >
         <!-- Summary cards + filters -->
         <div class="grid gap-4 md:grid-cols-4">
             <Card>
                 <CardHeader>
-                    <CardTitle class="text-sm text-muted-foreground">Today</CardTitle>
+                    <CardTitle class="text-sm text-muted-foreground"
+                        >Today</CardTitle
+                    >
                 </CardHeader>
                 <CardContent class="text-2xl font-semibold">
                     {{ formatHM(summary.todaySeconds) }}
@@ -194,7 +224,9 @@ const growthChartOptions = {
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle class="text-sm text-muted-foreground">This week</CardTitle>
+                    <CardTitle class="text-sm text-muted-foreground"
+                        >This week</CardTitle
+                    >
                 </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{
                     formatHM(summary.weekSeconds)
@@ -202,7 +234,9 @@ const growthChartOptions = {
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle class="text-sm text-muted-foreground">All time</CardTitle>
+                    <CardTitle class="text-sm text-muted-foreground"
+                        >All time</CardTitle
+                    >
                 </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{
                     formatHM(summary.allTimeSeconds)
@@ -210,7 +244,9 @@ const growthChartOptions = {
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle class="text-sm text-muted-foreground">Total sessions</CardTitle>
+                    <CardTitle class="text-sm text-muted-foreground"
+                        >Total sessions</CardTitle
+                    >
                 </CardHeader>
                 <CardContent class="text-2xl font-semibold">{{
                     summary.sessionCount
@@ -220,12 +256,27 @@ const growthChartOptions = {
 
         <!-- Filters -->
         <div class="flex flex-wrap items-center gap-3">
-            <MultiSelectCombobox v-model="selectedLanguages" :options="languages" placeholder="Languages"
-                class="w-40" />
-            <MultiSelectCombobox v-model="selectedModalities" :options="modalities" placeholder="Modalities"
-                class="w-40" />
-            <MultiSelectCombobox v-model="selectedSources" :options="inputSources" placeholder="Sources" class="w-40" />
-            <Button variant="ghost" size="sm" @click="clearDashboardFilters">Clear filters</Button>
+            <MultiSelectCombobox
+                v-model="selectedLanguages"
+                :options="languages"
+                placeholder="Languages"
+                class="w-40"
+            />
+            <MultiSelectCombobox
+                v-model="selectedModalities"
+                :options="modalities"
+                placeholder="Modalities"
+                class="w-40"
+            />
+            <MultiSelectCombobox
+                v-model="selectedSources"
+                :options="inputSources"
+                placeholder="Sources"
+                class="w-40"
+            />
+            <Button variant="ghost" size="sm" @click="clearDashboardFilters"
+                >Clear filters</Button
+            >
         </div>
 
         <!-- Daily totals, last 30, 60, 90, 365 days -->
@@ -262,7 +313,10 @@ const growthChartOptions = {
                 </CardHeader>
                 <CardContent>
                     <div class="h-64">
-                        <Bar :data="breakdownChartData(bySource)" :options="breakdownChartOptions" />
+                        <Bar
+                            :data="breakdownChartData(bySource)"
+                            :options="breakdownChartOptions"
+                        />
                     </div>
                 </CardContent>
             </Card>
@@ -272,7 +326,10 @@ const growthChartOptions = {
                 </CardHeader>
                 <CardContent>
                     <div class="h-64">
-                        <Bar :data="breakdownChartData(byModality)" :options="breakdownChartOptions" />
+                        <Bar
+                            :data="breakdownChartData(byModality)"
+                            :options="breakdownChartOptions"
+                        />
                     </div>
                 </CardContent>
             </Card>
@@ -282,7 +339,10 @@ const growthChartOptions = {
                 </CardHeader>
                 <CardContent>
                     <div class="h-64">
-                        <Line :data="growthChartData" :options="growthChartOptions" />
+                        <Line
+                            :data="growthChartData"
+                            :options="growthChartOptions"
+                        />
                     </div>
                 </CardContent>
             </Card>
