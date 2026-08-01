@@ -146,11 +146,13 @@ function growthDateLabel(dateStr: string, allDates: string[]): string {
     if (spanDays > 365) {
         return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
     }
+
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
 const growthChartData = computed(() => {
     const dates = props.growth.map((g) => g.date);
+
     return {
         labels: dates.map((d) => growthDateLabel(d, dates)),
         datasets: [
