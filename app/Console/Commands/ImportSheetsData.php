@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 class ImportSheetsData extends Command
 {
     protected $signature = 'import:sheets {file} {--user=} {--dry-run}';
+
     protected $description = 'Import historical CI session data from a Google Sheets CSV export';
 
     /**
@@ -127,6 +128,7 @@ class ImportSheetsData extends Command
         $h = intdiv($seconds, 3600);
         $m = intdiv($seconds % 3600, 60);
         $s = $seconds % 60;
+
         return sprintf('%d:%02d:%02d', $h, $m, $s);
     }
 }

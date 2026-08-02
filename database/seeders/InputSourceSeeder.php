@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\InputSource;
 use Illuminate\Database\Seeder;
 
 class InputSourceSeeder extends Seeder
@@ -24,7 +24,7 @@ class InputSourceSeeder extends Seeder
         ];
 
         foreach ($sources as $s) {
-            \App\Models\InputSource::firstOrCreate(
+            InputSource::firstOrCreate(
                 ['slug' => $s['slug']],
                 [...$s, 'is_system' => true, 'is_active' => true, 'user_id' => null]
             );

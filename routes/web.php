@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CiSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InputSourceController;
 use App\Http\Controllers\TagController;
+use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
 

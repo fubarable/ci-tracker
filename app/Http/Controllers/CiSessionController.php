@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\InputSource;
+use App\Models\CiSession;
 use App\Models\Language;
 use App\Models\Modality;
-use App\Models\CiSession;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -68,6 +68,7 @@ class CiSessionController extends Controller
         if ($session && is_null($session->paused_at)) {
             $session->update(['paused_at' => now()]);
         }
+
         return back();
     }
 
@@ -81,6 +82,7 @@ class CiSessionController extends Controller
                 'paused_at' => null,
             ]);
         }
+
         return back();
     }
 
@@ -98,6 +100,7 @@ class CiSessionController extends Controller
                 'paused_at' => null,
             ]);
         }
+
         return back();
     }
 
@@ -216,6 +219,7 @@ class CiSessionController extends Controller
 
         $sessions->through(function ($session) {
             $session->tag_ids = $session->tags->pluck('id');
+
             return $session;
         });
 
