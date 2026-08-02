@@ -1,2 +1,44 @@
+# Ignore build output
+public/build/
+
+# Ignore vendor libraries
+vendor/
+
+# Ignore node_modules
+node_modules/
+
+# Ignore Claude skill files
+.claude/
+
+# Ignore GitHub skill files
+.github/skills/
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore lockfiles
+package-lock.json
+pnpm-lock.yaml
+
+# Ignore compiled assets
+public/fonts-manifest.json
+public/build/manifest.json
+
+# Ignore SQL dumps
+*.sql
+
+# Ignore MCP config
+.mcp.json
+
+# Ignore Prettier config itself
+.prettierrc
+
+# Ignore Vite dist output (future-proof)
+dist/
+
+# Ignore UI component library files
 resources/js/components/ui/*
+
+# Ignore Blade mail templates
 resources/views/mail/*

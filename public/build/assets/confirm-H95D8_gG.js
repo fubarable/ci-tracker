@@ -1,1 +1,33 @@
-import{Ut as e,it as t,or as n,q as r,rr as i}from"./dist-BjNOdvyx.js";import{d as a}from"./button-BzNzzr7Y.js";import{t as o}from"./loader-circle-DNeaD9dQ.js";import{n as s}from"./wayfinder-Dp7PqxvV.js";var c=t({__name:`Spinner`,props:{class:{type:[Boolean,null,String,Object,Array]}},setup(t){let s=t;return(t,c)=>(e(),r(i(o),{role:`status`,"aria-label":`Loading`,class:n(i(a)(`size-4 animate-spin`,s.class))},null,8,[`class`]))}}),l=e=>({url:l.url(e),method:`post`});l.definition={methods:[`post`],url:`/user/confirm-password`},l.url=e=>l.definition.url+s(e),l.post=e=>({url:l.url(e),method:`post`});var u=e=>({action:l.url(e),method:`post`});u.post=e=>({action:l.url(e),method:`post`}),l.form=u;var d={store:Object.assign(l,l)};export{l as n,c as r,d as t};
+import { Ut as e, it as t, or as n, q as r, rr as i } from './dist-BjNOdvyx.js';
+import { d as a } from './button-BzNzzr7Y.js';
+import { t as o } from './loader-circle-DNeaD9dQ.js';
+import { n as s } from './wayfinder-Dp7PqxvV.js';
+var c = t({
+        __name: `Spinner`,
+        props: { class: { type: [Boolean, null, String, Object, Array] } },
+        setup(t) {
+            let s = t;
+            return (t, c) => (
+                e(),
+                r(
+                    i(o),
+                    {
+                        role: `status`,
+                        'aria-label': `Loading`,
+                        class: n(i(a)(`size-4 animate-spin`, s.class)),
+                    },
+                    null,
+                    8,
+                    [`class`],
+                )
+            );
+        },
+    }),
+    l = (e) => ({ url: l.url(e), method: `post` });
+((l.definition = { methods: [`post`], url: `/user/confirm-password` }),
+    (l.url = (e) => l.definition.url + s(e)),
+    (l.post = (e) => ({ url: l.url(e), method: `post` })));
+var u = (e) => ({ action: l.url(e), method: `post` });
+((u.post = (e) => ({ action: l.url(e), method: `post` })), (l.form = u));
+var d = { store: Object.assign(l, l) };
+export { l as n, c as r, d as t };

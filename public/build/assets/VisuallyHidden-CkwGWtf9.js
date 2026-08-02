@@ -1,1 +1,141 @@
-import{o as e}from"./Presence-2uTOxF-0.js";import{Ct as t,G as n,Gt as r,Sn as i,Ut as a,Vn as o,Xt as s,_n as c,ht as l,it as u,q as d,qn as f,rr as p,vn as m}from"./dist-BjNOdvyx.js";import{c as h,l as g}from"./button-BzNzzr7Y.js";import{i as _}from"./useForwardExpose-JHVakd1j.js";function v(t){let r=e({dir:f(`ltr`)});return n(()=>t?.value||r.dir?.value||`ltr`)}function y(){let e=f();return{primitiveElement:e,currentElement:n(()=>[`#text`,`#comment`].includes(e.value?.$el.nodeName)?e.value?.$el.nextElementSibling:_(e))}}var b=`data-reka-collection-item`;function x(e={}){let{key:i=``,isProvider:a=!1}=e,s=`${i}CollectionProvider`,d;if(a){let e=f(new Map);d={collectionRef:f(),itemMap:e},r(s,d)}else d=t(s);let p=(e=!1)=>{let t=d.collectionRef.value;if(!t)return[];let n=Array.from(t.querySelectorAll(`[${b}]`)),r=new Map(n.map((e,t)=>[e,t])),i=Array.from(d.itemMap.value.values()).sort((e,t)=>(r.get(e.ref)??-1)-(r.get(t.ref)??-1));return e?i:i.filter(e=>e.ref.dataset.disabled!==``)},h=u({name:`CollectionSlot`,inheritAttrs:!1,setup(e,{slots:t,attrs:n}){let{primitiveElement:r,currentElement:i}=y();return c(i,()=>{d.collectionRef.value=i.value}),()=>l(g,{ref:r,...n},t)}}),_=u({name:`CollectionItem`,inheritAttrs:!1,props:{value:{validator:()=>!0}},setup(e,{slots:t,attrs:n}){let{primitiveElement:r,currentElement:i}=y();return m(t=>{if(i.value){let n=o(i.value);d.itemMap.value.set(n,{ref:i.value,value:e.value}),t(()=>d.itemMap.value.delete(n))}}),()=>l(g,{...n,[b]:``,ref:r},t)}});return{getItems:p,reactiveItems:n(()=>Array.from(d.itemMap.value.values())),itemMapSize:n(()=>d.itemMap.value.size),CollectionSlot:h,CollectionItem:_}}var S=u({__name:`VisuallyHidden`,props:{feature:{type:String,required:!1,default:`focusable`},asChild:{type:Boolean,required:!1},as:{type:null,required:!1,default:`span`}},setup(e){return(e,t)=>(a(),d(p(h),{as:e.as,"as-child":e.asChild,"aria-hidden":e.feature===`focusable`||e.feature===`fully-hidden`?`true`:void 0,"data-hidden":e.feature===`fully-hidden`?``:void 0,tabindex:e.feature===`fully-hidden`?`-1`:void 0,style:{position:`absolute`,border:0,width:`1px`,height:`1px`,padding:0,margin:`-1px`,overflow:`hidden`,clip:`rect(0, 0, 0, 0)`,clipPath:`inset(50%)`,whiteSpace:`nowrap`,wordWrap:`normal`,top:`-1px`,left:`-1px`}},{default:i(()=>[s(e.$slots,`default`)]),_:3},8,[`as`,`as-child`,`aria-hidden`,`data-hidden`,`tabindex`]))}});export{v as i,x as n,y as r,S as t};
+import { o as e } from './Presence-2uTOxF-0.js';
+import {
+    Ct as t,
+    G as n,
+    Gt as r,
+    Sn as i,
+    Ut as a,
+    Vn as o,
+    Xt as s,
+    _n as c,
+    ht as l,
+    it as u,
+    q as d,
+    qn as f,
+    rr as p,
+    vn as m,
+} from './dist-BjNOdvyx.js';
+import { c as h, l as g } from './button-BzNzzr7Y.js';
+import { i as _ } from './useForwardExpose-JHVakd1j.js';
+function v(t) {
+    let r = e({ dir: f(`ltr`) });
+    return n(() => t?.value || r.dir?.value || `ltr`);
+}
+function y() {
+    let e = f();
+    return {
+        primitiveElement: e,
+        currentElement: n(() =>
+            [`#text`, `#comment`].includes(e.value?.$el.nodeName)
+                ? e.value?.$el.nextElementSibling
+                : _(e),
+        ),
+    };
+}
+var b = `data-reka-collection-item`;
+function x(e = {}) {
+    let { key: i = ``, isProvider: a = !1 } = e,
+        s = `${i}CollectionProvider`,
+        d;
+    if (a) {
+        let e = f(new Map());
+        ((d = { collectionRef: f(), itemMap: e }), r(s, d));
+    } else d = t(s);
+    let p = (e = !1) => {
+            let t = d.collectionRef.value;
+            if (!t) return [];
+            let n = Array.from(t.querySelectorAll(`[${b}]`)),
+                r = new Map(n.map((e, t) => [e, t])),
+                i = Array.from(d.itemMap.value.values()).sort(
+                    (e, t) => (r.get(e.ref) ?? -1) - (r.get(t.ref) ?? -1),
+                );
+            return e ? i : i.filter((e) => e.ref.dataset.disabled !== ``);
+        },
+        h = u({
+            name: `CollectionSlot`,
+            inheritAttrs: !1,
+            setup(e, { slots: t, attrs: n }) {
+                let { primitiveElement: r, currentElement: i } = y();
+                return (
+                    c(i, () => {
+                        d.collectionRef.value = i.value;
+                    }),
+                    () => l(g, { ref: r, ...n }, t)
+                );
+            },
+        }),
+        _ = u({
+            name: `CollectionItem`,
+            inheritAttrs: !1,
+            props: { value: { validator: () => !0 } },
+            setup(e, { slots: t, attrs: n }) {
+                let { primitiveElement: r, currentElement: i } = y();
+                return (
+                    m((t) => {
+                        if (i.value) {
+                            let n = o(i.value);
+                            (d.itemMap.value.set(n, {
+                                ref: i.value,
+                                value: e.value,
+                            }),
+                                t(() => d.itemMap.value.delete(n)));
+                        }
+                    }),
+                    () => l(g, { ...n, [b]: ``, ref: r }, t)
+                );
+            },
+        });
+    return {
+        getItems: p,
+        reactiveItems: n(() => Array.from(d.itemMap.value.values())),
+        itemMapSize: n(() => d.itemMap.value.size),
+        CollectionSlot: h,
+        CollectionItem: _,
+    };
+}
+var S = u({
+    __name: `VisuallyHidden`,
+    props: {
+        feature: { type: String, required: !1, default: `focusable` },
+        asChild: { type: Boolean, required: !1 },
+        as: { type: null, required: !1, default: `span` },
+    },
+    setup(e) {
+        return (e, t) => (
+            a(),
+            d(
+                p(h),
+                {
+                    as: e.as,
+                    'as-child': e.asChild,
+                    'aria-hidden':
+                        e.feature === `focusable` ||
+                        e.feature === `fully-hidden`
+                            ? `true`
+                            : void 0,
+                    'data-hidden': e.feature === `fully-hidden` ? `` : void 0,
+                    tabindex: e.feature === `fully-hidden` ? `-1` : void 0,
+                    style: {
+                        position: `absolute`,
+                        border: 0,
+                        width: `1px`,
+                        height: `1px`,
+                        padding: 0,
+                        margin: `-1px`,
+                        overflow: `hidden`,
+                        clip: `rect(0, 0, 0, 0)`,
+                        clipPath: `inset(50%)`,
+                        whiteSpace: `nowrap`,
+                        wordWrap: `normal`,
+                        top: `-1px`,
+                        left: `-1px`,
+                    },
+                },
+                { default: i(() => [s(e.$slots, `default`)]), _: 3 },
+                8,
+                [`as`, `as-child`, `aria-hidden`, `data-hidden`, `tabindex`],
+            )
+        );
+    },
+});
+export { v as i, x as n, y as r, S as t };

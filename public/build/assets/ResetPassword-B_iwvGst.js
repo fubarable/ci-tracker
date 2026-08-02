@@ -1,1 +1,221 @@
-import{F as e,J as t,K as n,Sn as r,Ut as i,Y as a,it as o,kt as s,n as c,nt as l,q as u,qn as d,r as f,rr as p,tt as m}from"./dist-BjNOdvyx.js";import{t as h}from"./button-BzNzzr7Y.js";import{t as g}from"./Label-BSXB3WZu.js";import{t as _}from"./PasswordInput-BdWN21u9.js";import{t as v}from"./Input-Dpp21zxV.js";import{t as y}from"./InputError-nQpSasUY.js";import{r as b}from"./confirm-H95D8_gG.js";import{r as x}from"./password-DAqg_SNm.js";var S={class:`grid gap-6`},C={class:`grid gap-2`},w={class:`grid gap-2`},T={class:`grid gap-2`},E=o({layout:{title:`Reset password`,description:`Please enter your new password below`},__name:`ResetPassword`,props:{token:{},email:{},passwordRules:{}},setup(o){let E=d(o.email);return(d,D)=>(i(),a(e,null,[l(p(f),{title:`Reset password`}),l(p(c),s(p(x).form(),{transform:e=>({...e,token:o.token,email:o.email}),"reset-on-success":[`password`,`password_confirmation`]}),{default:r(({errors:e,processing:a})=>[n(`div`,S,[n(`div`,C,[l(p(g),{for:`email`},{default:r(()=>[...D[1]||=[m(`Email`,-1)]]),_:1}),l(p(v),{id:`email`,type:`email`,name:`email`,autocomplete:`email`,modelValue:E.value,"onUpdate:modelValue":D[0]||=e=>E.value=e,class:`mt-1 block w-full`,readonly:``},null,8,[`modelValue`]),l(y,{message:e.email,class:`mt-2`},null,8,[`message`])]),n(`div`,w,[l(p(g),{for:`password`},{default:r(()=>[...D[2]||=[m(`Password`,-1)]]),_:1}),l(_,{id:`password`,name:`password`,autocomplete:`new-password`,class:`mt-1 block w-full`,autofocus:``,placeholder:`Password`,passwordrules:o.passwordRules},null,8,[`passwordrules`]),l(y,{message:e.password},null,8,[`message`])]),n(`div`,T,[l(p(g),{for:`password_confirmation`},{default:r(()=>[...D[3]||=[m(` Confirm password `,-1)]]),_:1}),l(_,{id:`password_confirmation`,name:`password_confirmation`,autocomplete:`new-password`,class:`mt-1 block w-full`,placeholder:`Confirm password`,passwordrules:o.passwordRules},null,8,[`passwordrules`]),l(y,{message:e.password_confirmation},null,8,[`message`])]),l(p(h),{type:`submit`,class:`mt-4 w-full`,disabled:a,"data-test":`reset-password-button`},{default:r(()=>[a?(i(),u(p(b),{key:0})):t(``,!0),D[4]||=m(` Reset password `,-1)]),_:2},1032,[`disabled`])])]),_:1},16,[`transform`])],64))}});export{E as default};
+import {
+    F as e,
+    J as t,
+    K as n,
+    Sn as r,
+    Ut as i,
+    Y as a,
+    it as o,
+    kt as s,
+    n as c,
+    nt as l,
+    q as u,
+    qn as d,
+    r as f,
+    rr as p,
+    tt as m,
+} from './dist-BjNOdvyx.js';
+import { t as h } from './button-BzNzzr7Y.js';
+import { t as g } from './Label-BSXB3WZu.js';
+import { t as _ } from './PasswordInput-BdWN21u9.js';
+import { t as v } from './Input-Dpp21zxV.js';
+import { t as y } from './InputError-nQpSasUY.js';
+import { r as b } from './confirm-H95D8_gG.js';
+import { r as x } from './password-DAqg_SNm.js';
+var S = { class: `grid gap-6` },
+    C = { class: `grid gap-2` },
+    w = { class: `grid gap-2` },
+    T = { class: `grid gap-2` },
+    E = o({
+        layout: {
+            title: `Reset password`,
+            description: `Please enter your new password below`,
+        },
+        __name: `ResetPassword`,
+        props: { token: {}, email: {}, passwordRules: {} },
+        setup(o) {
+            let E = d(o.email);
+            return (d, D) => (
+                i(),
+                a(
+                    e,
+                    null,
+                    [
+                        l(p(f), { title: `Reset password` }),
+                        l(
+                            p(c),
+                            s(p(x).form(), {
+                                transform: (e) => ({
+                                    ...e,
+                                    token: o.token,
+                                    email: o.email,
+                                }),
+                                'reset-on-success': [
+                                    `password`,
+                                    `password_confirmation`,
+                                ],
+                            }),
+                            {
+                                default: r(({ errors: e, processing: a }) => [
+                                    n(`div`, S, [
+                                        n(`div`, C, [
+                                            l(
+                                                p(g),
+                                                { for: `email` },
+                                                {
+                                                    default: r(() => [
+                                                        ...(D[1] ||= [
+                                                            m(`Email`, -1),
+                                                        ]),
+                                                    ]),
+                                                    _: 1,
+                                                },
+                                            ),
+                                            l(
+                                                p(v),
+                                                {
+                                                    id: `email`,
+                                                    type: `email`,
+                                                    name: `email`,
+                                                    autocomplete: `email`,
+                                                    modelValue: E.value,
+                                                    'onUpdate:modelValue':
+                                                        (D[0] ||= (e) =>
+                                                            (E.value = e)),
+                                                    class: `mt-1 block w-full`,
+                                                    readonly: ``,
+                                                },
+                                                null,
+                                                8,
+                                                [`modelValue`],
+                                            ),
+                                            l(
+                                                y,
+                                                {
+                                                    message: e.email,
+                                                    class: `mt-2`,
+                                                },
+                                                null,
+                                                8,
+                                                [`message`],
+                                            ),
+                                        ]),
+                                        n(`div`, w, [
+                                            l(
+                                                p(g),
+                                                { for: `password` },
+                                                {
+                                                    default: r(() => [
+                                                        ...(D[2] ||= [
+                                                            m(`Password`, -1),
+                                                        ]),
+                                                    ]),
+                                                    _: 1,
+                                                },
+                                            ),
+                                            l(
+                                                _,
+                                                {
+                                                    id: `password`,
+                                                    name: `password`,
+                                                    autocomplete: `new-password`,
+                                                    class: `mt-1 block w-full`,
+                                                    autofocus: ``,
+                                                    placeholder: `Password`,
+                                                    passwordrules:
+                                                        o.passwordRules,
+                                                },
+                                                null,
+                                                8,
+                                                [`passwordrules`],
+                                            ),
+                                            l(
+                                                y,
+                                                { message: e.password },
+                                                null,
+                                                8,
+                                                [`message`],
+                                            ),
+                                        ]),
+                                        n(`div`, T, [
+                                            l(
+                                                p(g),
+                                                {
+                                                    for: `password_confirmation`,
+                                                },
+                                                {
+                                                    default: r(() => [
+                                                        ...(D[3] ||= [
+                                                            m(
+                                                                ` Confirm password `,
+                                                                -1,
+                                                            ),
+                                                        ]),
+                                                    ]),
+                                                    _: 1,
+                                                },
+                                            ),
+                                            l(
+                                                _,
+                                                {
+                                                    id: `password_confirmation`,
+                                                    name: `password_confirmation`,
+                                                    autocomplete: `new-password`,
+                                                    class: `mt-1 block w-full`,
+                                                    placeholder: `Confirm password`,
+                                                    passwordrules:
+                                                        o.passwordRules,
+                                                },
+                                                null,
+                                                8,
+                                                [`passwordrules`],
+                                            ),
+                                            l(
+                                                y,
+                                                {
+                                                    message:
+                                                        e.password_confirmation,
+                                                },
+                                                null,
+                                                8,
+                                                [`message`],
+                                            ),
+                                        ]),
+                                        l(
+                                            p(h),
+                                            {
+                                                type: `submit`,
+                                                class: `mt-4 w-full`,
+                                                disabled: a,
+                                                'data-test': `reset-password-button`,
+                                            },
+                                            {
+                                                default: r(() => [
+                                                    a
+                                                        ? (i(),
+                                                          u(p(b), { key: 0 }))
+                                                        : t(``, !0),
+                                                    (D[4] ||= m(
+                                                        ` Reset password `,
+                                                        -1,
+                                                    )),
+                                                ]),
+                                                _: 2,
+                                            },
+                                            1032,
+                                            [`disabled`],
+                                        ),
+                                    ]),
+                                ]),
+                                _: 1,
+                            },
+                            16,
+                            [`transform`],
+                        ),
+                    ],
+                    64,
+                )
+            );
+        },
+    });
+export { E as default };
