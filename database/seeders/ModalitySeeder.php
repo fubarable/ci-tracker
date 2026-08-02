@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Modality;
 use Illuminate\Database\Seeder;
 
 class ModalitySeeder extends Seeder
@@ -20,7 +20,7 @@ class ModalitySeeder extends Seeder
         ];
 
         foreach ($modalities as $m) {
-            \App\Models\Modality::firstOrCreate(['slug' => $m['slug']], $m);
+            Modality::firstOrCreate(['slug' => $m['slug']], $m);
         }
     }
 }

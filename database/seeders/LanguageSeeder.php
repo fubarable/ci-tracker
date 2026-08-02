@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Language;
 use Illuminate\Database\Seeder;
 
 class LanguageSeeder extends Seeder
@@ -12,7 +12,7 @@ class LanguageSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Language::firstOrCreate(
+        Language::firstOrCreate(
             ['code' => 'es'],
             ['name' => 'Spanish', 'is_active' => true, 'sort_order' => 1]
         );

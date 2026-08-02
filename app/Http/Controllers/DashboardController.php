@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InputSource;
+use App\Models\Language;
+use App\Models\Modality;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Inertia\Inertia;
-use App\Models\User;
-use App\Models\Language;
-use App\Models\Modality;
-use App\Models\InputSource;
 
 class DashboardController extends Controller
 {
@@ -52,20 +52,20 @@ class DashboardController extends Controller
         )->get();
 
         $totalSeconds = $sessions->sum(
-            fn($s) => $s->started_at->diffInSeconds($s->ended_at) - $s->paused_duration_seconds
+            fn ($s) => $s->started_at->diffInSeconds($s->ended_at) - $s->paused_duration_seconds
         );
 
         $todayStart = now($tz)->startOfDay()->utc();
         $todayEnd = now($tz)->endOfDay()->utc();
         $todaySeconds = $sessions
-            ->filter(fn($s) => $s->started_at->between($todayStart, $todayEnd))
-            ->sum(fn($s) => $s->started_at->diffInSeconds($s->ended_at) - $s->paused_duration_seconds);
+            ->filter(fn ($s) => $s->started_at->between($todayStart, $todayEnd))
+            ->sum(fn ($s) => $s->started_at->diffInSeconds($s->ended_at) - $s->paused_duration_seconds);
 
         $weekStart = now($tz)->startOfWeek()->utc();
         $weekEnd = now($tz)->endOfWeek()->utc();
         $weekSeconds = $sessions
-            ->filter(fn($s) => $s->started_at->between($weekStart, $weekEnd))
-            ->sum(fn($s) => $s->started_at->diffInSeconds($s->ended_at) - $s->paused_duration_seconds);
+            ->filter(fn ($s) => $s->started_at->between($weekStart, $weekEnd))
+            ->sum(fn ($s) => $s->started_at->diffInSeconds($s->ended_at) - $s->paused_duration_seconds);
 
         return [
             'allTimeSeconds' => max(0, $totalSeconds),
@@ -83,7 +83,7 @@ class DashboardController extends Controller
                 $filters
             )->orderBy('started_at')->first();
 
-            if (!$earliest) {
+            if (! $earliest) {
                 return [];
             }
 
@@ -113,7 +113,7 @@ class DashboardController extends Controller
             }
         }
 
-        return collect($byDay)->map(fn($seconds, $date) => [
+        return collect($byDay)->map(fn ($seconds, $date) => [
             'date' => $date,
             'seconds' => $seconds,
         ])->values()->all();
@@ -135,7 +135,7 @@ class DashboardController extends Controller
 
         arsort($totals);
 
-        return collect($totals)->map(fn($seconds, $label) => [
+        return collect($totals)->map(fn ($seconds, $label) => [
             'label' => $label,
             'seconds' => $seconds,
         ])->values()->all();
@@ -143,15 +143,16 @@ class DashboardController extends Controller
 
     private function applyFilters(Builder|Relation $query, array $filters)
     {
-        if (!empty($filters['language_ids'])) {
+        if (! empty($filters['language_ids'])) {
             $query->whereIn('language_id', $filters['language_ids']);
         }
-        if (!empty($filters['modality_ids'])) {
+        if (! empty($filters['modality_ids'])) {
             $query->whereIn('modality_id', $filters['modality_ids']);
         }
-        if (!empty($filters['input_source_ids'])) {
+        if (! empty($filters['input_source_ids'])) {
             $query->whereIn('input_source_id', $filters['input_source_ids']);
         }
+
         return $query;
     }
 
